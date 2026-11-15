@@ -155,6 +155,8 @@ export const dom = {
   iosInstallModal: document.getElementById('iosInstallModal'),
   btnCloseIosInstall: document.getElementById('btnCloseIosInstall'),
   pwaUpdateOverlay: document.getElementById('pwaUpdateOverlay'),
+  pwaUpdateTag: document.getElementById('pwaUpdateTag'),
+  pwaUpdateTitle: document.getElementById('pwaUpdateTitle'),
   pwaUpdateText: document.getElementById('pwaUpdateText'),
   pwaUpdateBar: document.getElementById('pwaUpdateBar'),
   bgmAudio: document.getElementById('bgmAudio')

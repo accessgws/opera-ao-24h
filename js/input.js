@@ -364,6 +364,30 @@ export function initInputListeners() {
     }
   }
 
+  let installProgressTimer = null;
+  let installFallbackTimer = null;
+
+  function showInstallProgress(tag, title, text, percent) {
+    if (!dom.pwaUpdateOverlay) return;
+    dom.pwaUpdateOverlay.classList.remove('hidden');
+    if (dom.pwaUpdateTag) dom.pwaUpdateTag.textContent = tag;
+    if (dom.pwaUpdateTitle) dom.pwaUpdateTitle.textContent = title;
+    if (dom.pwaUpdateText) dom.pwaUpdateText.textContent = text;
+    if (dom.pwaUpdateBar) dom.pwaUpdateBar.style.width = `${percent}%`;
+  }
+
+  function finishInstallProgress(message = 'App instalado! Já está na sua tela inicial.') {
+    clearInterval(installProgressTimer);
+    clearTimeout(installFallbackTimer);
+    installProgressTimer = null;
+    installFallbackTimer = null;
+    if (!dom.pwaUpdateOverlay || dom.pwaUpdateOverlay.classList.contains('hidden')) return;
+    showInstallProgress('Instalação Concluída', 'Operação 24h Instalado', message, 100);
+    setTimeout(() => {
+      if (dom.pwaUpdateOverlay) dom.pwaUpdateOverlay.classList.add('hidden');
+    }, 1400);
+  }
+
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredInstallPrompt = e;
@@ -372,6 +396,7 @@ export function initInputListeners() {
 
   window.addEventListener('appinstalled', () => {
     deferredInstallPrompt = null;
+    finishInstallProgress();
     syncMobileOrientBanner();
   });
 
@@ -383,11 +408,32 @@ export function initInputListeners() {
         return;
       }
       if (deferredInstallPrompt) {
+        let pct = 20;
+        showInstallProgress('Instalando App', 'Instalando Operação 24h', 'Confirme a instalação no navegador...', pct);
         deferredInstallPrompt.prompt();
-        Promise.resolve(deferredInstallPrompt.userChoice).then(() => {
+        Promise.resolve(deferredInstallPrompt.userChoice).then((choice) => {
           deferredInstallPrompt = null;
+          if (!choice || choice.outcome !== 'accepted') {
+            if (dom.pwaUpdateOverlay) dom.pwaUpdateOverlay.classList.add('hidden');
+            syncMobileOrientBanner();
+            return;
+          }
+          pct = 40;
+          showInstallProgress('Instalando App', 'Instalando Operação 24h', 'Baixando e preparando aplicativo...', pct);
+          clearInterval(installProgressTimer);
+          installProgressTimer = setInterval(() => {
+            pct = Math.min(90, pct + 8);
+            const msg = pct < 70 ? 'Baixando e preparando aplicativo...' : 'Finalizando atalho na tela inicial...';
+            showInstallProgress('Instalando App', 'Instalando Operação 24h', msg, pct);
+          }, 450);
+          clearTimeout(installFallbackTimer);
+          installFallbackTimer = setTimeout(() => {
+            finishInstallProgress('Instalação iniciada! Verifique sua tela inicial.');
+          }, 8000);
           syncMobileOrientBanner();
-        }).catch(() => {});
+        }).catch(() => {
+          if (dom.pwaUpdateOverlay) dom.pwaUpdateOverlay.classList.add('hidden');
+        });
       }
     });
   }

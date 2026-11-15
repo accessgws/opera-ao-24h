@@ -147,5 +147,9 @@ export const dom = {
   mpPlayersList: document.getElementById('mpPlayersList'),
   mpStatusText: document.getElementById('mpStatusText'),
   btnMpStartMatch: document.getElementById('btnMpStartMatch'),
+  mobileOrientBanner: document.getElementById('mobileOrientBanner'),
+  mobileOrientText: document.getElementById('mobileOrientText'),
+  btnBannerFullscreen: document.getElementById('btnBannerFullscreen'),
+  btnDismissOrientBanner: document.getElementById('btnDismissOrientBanner'),
   bgmAudio: document.getElementById('bgmAudio')
 };

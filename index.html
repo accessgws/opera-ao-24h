@@ -21,7 +21,7 @@
   <canvas id="gameCanvas"></canvas>
 
   <!-- HUD Superior Fixo -->
-  <header class="fixed top-0 left-0 right-0 z-20 flex items-start justify-between gap-1.5 sm:gap-2 hud-safe pointer-events-none">
+  <header class="fixed top-0 left-0 right-0 z-40 flex items-start justify-between gap-1.5 sm:gap-2 hud-safe pointer-events-none">
 
     <!-- ESQUERDA: Indicador de Ato + Distância + Pontos + Combo -->
     <div id="hudLeftGroup" class="hidden flex flex-wrap items-center gap-1.5 sm:gap-2.5 min-w-0">
@@ -375,6 +375,21 @@
         </div>
       </div>
     </div>
+
+    <!-- Aviso Mobile: Girar Tela e Ativar Tela Cheia -->
+    <div id="mobileOrientBanner" class="hidden fixed left-1/2 -translate-x-1/2 bottom-2.5 z-40 max-w-[94vw]">
+      <div class="frosted-pill rounded-2xl px-3 py-1.5 border-sky-400/45 bg-slate-900/90 flex items-center gap-2 shadow-xl">
+        <span id="mobileOrientText" class="text-[11px] font-extrabold text-sky-100 whitespace-nowrap">📱 Gire a tela e ative Tela Cheia</span>
+        <button id="btnBannerFullscreen" type="button"
+          class="rounded-xl bg-sky-500 hover:bg-sky-400 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white shrink-0 cursor-pointer transition">
+          Tela Cheia
+        </button>
+        <button id="btnDismissOrientBanner" type="button" aria-label="Fechar aviso"
+          class="rounded-lg bg-white/10 hover:bg-white/20 px-1.5 py-0.5 text-[10px] font-black text-slate-300 shrink-0 cursor-pointer">
+          ✕
+        </button>
+      </div>
+    </div>
   </section>
 
   <!-- Tela de Pausa -->
@@ -547,7 +562,7 @@
   </section>
 
   <!-- Modal Garagem de Upgrades & Missões -->
-  <section id="garageOverlay" class="hidden fixed inset-0 z-40 flex items-center justify-center p-2.5 sm:p-4 bg-slate-950/65 backdrop-blur-md">
+  <section id="garageOverlay" class="hidden fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-slate-950/65 backdrop-blur-md">
     <div id="garageCard" class="frosted-card animate-modal-enter modal-scroll w-full max-w-2xl max-h-[92dvh] overflow-y-auto rounded-3xl p-4 sm:p-6 text-left">
       <div class="flex items-center justify-between gap-2 pb-3 mb-3.5 border-b border-white/10">
         <div>
@@ -587,7 +602,7 @@
   </section>
 
   <!-- Modal Multijogador (Wi-Fi e Online Cloudflare) -->
-  <section id="multiplayerOverlay" class="hidden fixed inset-0 z-40 flex items-center justify-center p-2.5 sm:p-4 bg-slate-950/65 backdrop-blur-md">
+  <section id="multiplayerOverlay" class="hidden fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-slate-950/65 backdrop-blur-md">
     <div id="multiplayerCard" class="frosted-card animate-modal-enter modal-scroll w-full max-w-lg max-h-[92dvh] overflow-y-auto rounded-3xl p-4 sm:p-6 text-left">
       <div class="flex items-center justify-between gap-2 pb-3 mb-3.5 border-b border-white/10">
         <div>

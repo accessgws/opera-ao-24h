@@ -3,6 +3,7 @@
 // =============================================================================
 
 import { audio } from './audio.js';
+import { IS_COARSE_POINTER } from './config.js';
 import { dom, canvas } from './dom.js';
 import { resizeCanvas, render, syncTouchZoneGuides, handleDuckOrFastFall, pulseTouchPill, handleActionPress, handleActionRelease, togglePause, startGame, returnToMenu } from './gameplay.js';
 import { state } from './state.js';
@@ -319,26 +320,74 @@ export function initInputListeners() {
     const isFs = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
     dom.iconFsEnter.classList.toggle('hidden', isFs);
     dom.iconFsExit.classList.toggle('hidden', !isFs);
+    syncMobileOrientBanner();
+  }
+
+  let orientBannerDismissed = false;
+  function syncMobileOrientBanner() {
+    if (!dom.mobileOrientBanner) return;
+    const isMobile = state.lastInputWasTouch || IS_COARSE_POINTER;
+    const isFs = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+    const isPortrait = window.innerHeight > window.innerWidth;
+    const shouldShow = isMobile && !orientBannerDismissed && (isPortrait || !isFs);
+    dom.mobileOrientBanner.classList.toggle('hidden', !shouldShow);
+    if (shouldShow && dom.mobileOrientText) {
+      dom.mobileOrientText.textContent = isPortrait
+        ? '📱 Gire o celular e ative Tela Cheia'
+        : '⛶ Toque para jogar em Tela Cheia';
+    }
+    if (dom.btnBannerFullscreen) {
+      dom.btnBannerFullscreen.classList.toggle('hidden', isFs || !fsSupported);
+    }
+  }
+
+  function requestToggleFullscreen() {
+    try {
+      const isFs = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+      if (isFs) {
+        const exit = document.exitFullscreen || document.webkitExitFullscreen;
+        if (exit) Promise.resolve(exit.call(document)).catch(() => {});
+      } else {
+        const el = document.documentElement;
+        const req = el.requestFullscreen || el.webkitRequestFullscreen;
+        if (req) {
+          Promise.resolve(req.call(el)).then(() => {
+            if ((state.lastInputWasTouch || IS_COARSE_POINTER) && screen.orientation && typeof screen.orientation.lock === 'function') {
+              screen.orientation.lock('landscape').catch(() => {});
+            }
+          }).catch(() => {});
+        }
+      }
+    } catch (err) {}
   }
 
   if (dom.btnFullscreen && fsSupported) {
     dom.btnFullscreen.addEventListener('click', (e) => {
       e.stopPropagation();
-      try {
-        const isFs = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
-        if (isFs) {
-          const exit = document.exitFullscreen || document.webkitExitFullscreen;
-          if (exit) Promise.resolve(exit.call(document)).catch(() => {});
-        } else {
-          const el = document.documentElement;
-          const req = el.requestFullscreen || el.webkitRequestFullscreen;
-          if (req) Promise.resolve(req.call(el)).catch(() => {});
-        }
-      } catch (err) {}
+      requestToggleFullscreen();
     });
     document.addEventListener('fullscreenchange', syncFullscreenIcon);
     document.addEventListener('webkitfullscreenchange', syncFullscreenIcon);
   }
+
+  if (dom.btnBannerFullscreen) {
+    dom.btnBannerFullscreen.addEventListener('click', (e) => {
+      e.stopPropagation();
+      requestToggleFullscreen();
+    });
+  }
+
+  if (dom.btnDismissOrientBanner) {
+    dom.btnDismissOrientBanner.addEventListener('click', (e) => {
+      e.stopPropagation();
+      orientBannerDismissed = true;
+      syncMobileOrientBanner();
+    });
+  }
+
+  window.addEventListener('resize', syncMobileOrientBanner);
+  window.addEventListener('orientationchange', () => setTimeout(syncMobileOrientBanner, 200));
+  syncMobileOrientBanner();
 
   dom.btnCopyResult.addEventListener('click', (e) => {
     e.stopPropagation();

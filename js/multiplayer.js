@@ -131,6 +131,7 @@ function renderLobbyUI() {
 
   const isHost = mpState.youId && mpState.youId === mpState.hostId;
   if (dom.btnMpStartMatch) {
+    dom.btnMpStartMatch.classList.remove('hidden');
     dom.btnMpStartMatch.disabled = !isHost;
     dom.btnMpStartMatch.classList.toggle('opacity-50', !isHost);
     dom.btnMpStartMatch.classList.toggle('cursor-not-allowed', !isHost);

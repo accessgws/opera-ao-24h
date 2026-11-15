@@ -6,6 +6,9 @@
   <meta name="theme-color" content="#0f172a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Operação 24h" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./assets/icon-192.png" />
   <title>Operação 24h: Voo da Fuga</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -376,19 +379,53 @@
       </div>
     </div>
 
-    <!-- Aviso Mobile: Girar Tela e Ativar Tela Cheia -->
-    <div id="mobileOrientBanner" class="hidden fixed left-1/2 -translate-x-1/2 bottom-2.5 z-40 max-w-[94vw]">
-      <div class="frosted-pill rounded-2xl px-3 py-1.5 border-sky-400/45 bg-slate-900/90 flex items-center gap-2 shadow-xl">
+    <!-- Aviso Mobile: Girar Tela, Tela Cheia e Instalar App (PWA) -->
+    <div id="mobileOrientBanner" class="hidden fixed left-1/2 -translate-x-1/2 bottom-2.5 z-40 max-w-[95vw]">
+      <div class="frosted-pill rounded-2xl px-2.5 py-1.5 border-sky-400/45 bg-slate-900/90 flex flex-wrap items-center justify-center gap-1.5 shadow-xl">
         <span id="mobileOrientText" class="text-[11px] font-extrabold text-sky-100 whitespace-nowrap">📱 Gire a tela e ative Tela Cheia</span>
         <button id="btnBannerFullscreen" type="button"
           class="rounded-xl bg-sky-500 hover:bg-sky-400 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white shrink-0 cursor-pointer transition">
           Tela Cheia
+        </button>
+        <button id="btnInstallPwa" type="button"
+          class="hidden rounded-xl bg-emerald-500 hover:bg-emerald-400 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white shrink-0 cursor-pointer transition">
+          📲 Instalar App
         </button>
         <button id="btnDismissOrientBanner" type="button" aria-label="Fechar aviso"
           class="rounded-lg bg-white/10 hover:bg-white/20 px-1.5 py-0.5 text-[10px] font-black text-slate-300 shrink-0 cursor-pointer">
           ✕
         </button>
       </div>
+    </div>
+  </section>
+
+  <!-- Modal Tutorial de Instalação PWA no iPhone (iOS Safari) -->
+  <section id="iosInstallModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-3 bg-slate-950/70 backdrop-blur-md">
+    <div class="frosted-card animate-modal-enter modal-scroll w-full max-w-sm max-h-[90dvh] overflow-y-auto rounded-3xl p-4 sm:p-5 text-left">
+      <div class="flex items-center justify-between gap-2 pb-2.5 mb-3 border-b border-white/10">
+        <div>
+          <p class="text-[10px] font-black uppercase tracking-widest text-emerald-300">App no iPhone</p>
+          <h2 class="text-base sm:text-lg font-black text-white leading-tight">Instalar na Tela de Início</h2>
+        </div>
+        <button id="btnCloseIosInstall" type="button"
+          class="rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 px-2.5 py-1 text-xs font-extrabold text-slate-200 cursor-pointer">
+          Fechar
+        </button>
+      </div>
+      <ol class="space-y-2.5 text-xs text-slate-200">
+        <li class="flex items-start gap-2.5 rounded-2xl bg-white/5 border border-white/10 p-2.5">
+          <span class="w-5 h-5 rounded-full bg-sky-500 text-white font-black text-[11px] flex items-center justify-center shrink-0">1</span>
+          <span>No Safari, toque no botão <strong>Compartilhar</strong> <span class="inline-block px-1.5 py-0.5 rounded bg-white/10 font-mono text-[10px]">⬆️</span> na barra inferior (ou superior).</span>
+        </li>
+        <li class="flex items-start gap-2.5 rounded-2xl bg-white/5 border border-white/10 p-2.5">
+          <span class="w-5 h-5 rounded-full bg-sky-500 text-white font-black text-[11px] flex items-center justify-center shrink-0">2</span>
+          <span>Role para baixo e toque em <strong>“Adicionar à Tela de Início”</strong> <span class="inline-block px-1.5 py-0.5 rounded bg-white/10 font-mono text-[10px]">＋</span>.</span>
+        </li>
+        <li class="flex items-start gap-2.5 rounded-2xl bg-white/5 border border-white/10 p-2.5">
+          <span class="w-5 h-5 rounded-full bg-emerald-500 text-white font-black text-[11px] flex items-center justify-center shrink-0">3</span>
+          <span>Toque em <strong>Adicionar</strong>. O jogo abrirá direto em <strong>Tela Cheia</strong> como app!</span>
+        </li>
+      </ol>
     </div>
   </section>
 

@@ -324,21 +324,82 @@ export function initInputListeners() {
   }
 
   let orientBannerDismissed = false;
+  let deferredInstallPrompt = null;
+  const isIosDevice = /iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+
+  function isPwaStandalone() {
+    return Boolean(
+      (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+      window.navigator.standalone === true
+    );
+  }
+
   function syncMobileOrientBanner() {
     if (!dom.mobileOrientBanner) return;
-    const isMobile = state.lastInputWasTouch || IS_COARSE_POINTER;
+    const isMobile = state.lastInputWasTouch || IS_COARSE_POINTER || isIosDevice;
     const isFs = Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+    const isStandalone = isPwaStandalone();
     const isPortrait = window.innerHeight > window.innerWidth;
-    const shouldShow = isMobile && !orientBannerDismissed && (isPortrait || !isFs);
+    const canOfferInstall = !isStandalone && (Boolean(deferredInstallPrompt) || isIosDevice);
+    const shouldShow = isMobile && !orientBannerDismissed && (isPortrait || (!isFs && !isStandalone) || canOfferInstall);
+
     dom.mobileOrientBanner.classList.toggle('hidden', !shouldShow);
     if (shouldShow && dom.mobileOrientText) {
-      dom.mobileOrientText.textContent = isPortrait
-        ? '📱 Gire o celular e ative Tela Cheia'
-        : '⛶ Toque para jogar em Tela Cheia';
+      if (isPortrait) {
+        dom.mobileOrientText.textContent = '📱 Gire a tela e ative Tela Cheia';
+      } else if (canOfferInstall) {
+        dom.mobileOrientText.textContent = '📲 Instale como App no celular';
+      } else {
+        dom.mobileOrientText.textContent = '⛶ Toque para jogar em Tela Cheia';
+      }
     }
     if (dom.btnBannerFullscreen) {
-      dom.btnBannerFullscreen.classList.toggle('hidden', isFs || !fsSupported);
+      dom.btnBannerFullscreen.classList.toggle('hidden', isFs || isStandalone || !fsSupported);
     }
+    if (dom.btnInstallPwa) {
+      dom.btnInstallPwa.classList.toggle('hidden', !canOfferInstall);
+      if (canOfferInstall) {
+        dom.btnInstallPwa.textContent = isIosDevice ? '📲 Instalar (iPhone)' : '📲 Instalar App';
+      }
+    }
+  }
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    syncMobileOrientBanner();
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredInstallPrompt = null;
+    syncMobileOrientBanner();
+  });
+
+  if (dom.btnInstallPwa) {
+    dom.btnInstallPwa.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (isIosDevice) {
+        if (dom.iosInstallModal) dom.iosInstallModal.classList.remove('hidden');
+        return;
+      }
+      if (deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        Promise.resolve(deferredInstallPrompt.userChoice).then(() => {
+          deferredInstallPrompt = null;
+          syncMobileOrientBanner();
+        }).catch(() => {});
+      }
+    });
+  }
+
+  if (dom.btnCloseIosInstall && dom.iosInstallModal) {
+    dom.btnCloseIosInstall.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dom.iosInstallModal.classList.add('hidden');
+    });
+    dom.iosInstallModal.addEventListener('click', (e) => {
+      if (e.target === dom.iosInstallModal) dom.iosInstallModal.classList.add('hidden');
+    });
   }
 
   function requestToggleFullscreen() {

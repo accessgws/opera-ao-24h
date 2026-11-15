@@ -151,5 +151,8 @@ export const dom = {
   mobileOrientText: document.getElementById('mobileOrientText'),
   btnBannerFullscreen: document.getElementById('btnBannerFullscreen'),
   btnDismissOrientBanner: document.getElementById('btnDismissOrientBanner'),
+  btnInstallPwa: document.getElementById('btnInstallPwa'),
+  iosInstallModal: document.getElementById('iosInstallModal'),
+  btnCloseIosInstall: document.getElementById('btnCloseIosInstall'),
   bgmAudio: document.getElementById('bgmAudio')
 };

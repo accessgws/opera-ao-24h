@@ -32,6 +32,12 @@ function bootstrapApp() {
   initInputListeners();
   initMultiplayerFromUrl();
 
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+
   const startLoop = () => {
     resizeCanvas();
     renderSkinPreviews();

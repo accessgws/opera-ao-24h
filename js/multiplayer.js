@@ -516,8 +516,20 @@ export function updateMultiplayerHUD() {
 }
 
 export function updateMultiplayerGameOverUI() {
-  if (!dom.gameOverMpBanner || !dom.gameOverMpList || !dom.gameOverMpHeadline) return;
+  if (!dom.gameOverMpBanner || !dom.mpLobbyPanel) return;
   const visible = mpState.inMatch && mpState.connected;
+  if (dom.btnRestart) {
+    const labelSpan = dom.btnRestart.querySelector('span');
+    if (labelSpan) {
+      if (visible) {
+        const isHost = mpState.youId && mpState.youId === mpState.hostId;
+        labelSpan.textContent = isHost ? 'Revanche na Sala' : 'Voltar à Sala';
+      } else {
+        labelSpan.textContent = 'Jogar de Novo';
+      }
+    }
+  }
+  if (!dom.gameOverMpList || !dom.gameOverMpHeadline) return;
   dom.gameOverMpBanner.classList.toggle('hidden', !visible);
   if (!visible) return;
 

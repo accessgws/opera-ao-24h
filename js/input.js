@@ -10,6 +10,18 @@ import { closeGarage, toggleMutePreference, cycleRoast, generateAndDownloadShare
 import { mpState, openMultiplayer, closeMultiplayer, connectToRoom, leaveRoom, requestMpStartMatch, sendMpSkin, sendMpMode, generateRoomCode, sanitizeRoomCode } from './multiplayer.js';
 
 export function initInputListeners() {
+  const handleRestartAction = () => {
+    if (mpState.connected && mpState.inMatch) {
+      if (mpState.youId && mpState.youId === mpState.hostId) {
+        requestMpStartMatch();
+      } else {
+        openMultiplayer();
+      }
+      return;
+    }
+    startGame();
+  };
+
   dom.btnModeCampaign.addEventListener('click', () => {
     state.selectedGameMode = 'campaign';
     dom.btnModeCampaign.className = 'rounded-xl py-2 px-2.5 sm:px-3 text-[11px] sm:text-xs font-extrabold uppercase tracking-wider transition cursor-pointer bg-sky-500 text-white shadow';
@@ -138,7 +150,7 @@ export function initInputListeners() {
       if (state.gameState === 'GAMEOVER' && !e.repeat) {
         e.preventDefault();
         state.lastInputWasTouch = false;
-        startGame();
+        handleRestartAction();
         return;
       }
       if (state.gameState === 'PLAYING') {
@@ -155,10 +167,14 @@ export function initInputListeners() {
         state.isHoldingAction = true;
       }
     } else if (e.code === 'Enter' && !e.repeat) {
-      if (state.gameState === 'START' || state.gameState === 'GAMEOVER') {
+      if (state.gameState === 'START') {
         e.preventDefault();
         state.lastInputWasTouch = false;
         startGame();
+      } else if (state.gameState === 'GAMEOVER') {
+        e.preventDefault();
+        state.lastInputWasTouch = false;
+        handleRestartAction();
       } else if (state.gameState === 'PLAYING' && state.isPaused) {
         e.preventDefault();
         state.lastInputWasTouch = false;
@@ -224,7 +240,7 @@ export function initInputListeners() {
 
   dom.btnRestart.addEventListener('click', (e) => {
     e.stopPropagation();
-    startGame();
+    handleRestartAction();
   });
 
   dom.btnOpenGarage.addEventListener('click', (e) => {

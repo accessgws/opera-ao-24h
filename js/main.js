@@ -10,6 +10,7 @@ import { renderSkinPreviews } from './render/player.js';
 import { state, initClouds, initNightStars } from './state.js';
 import { loadSettings, loadProgressState } from './storage.js';
 import { syncTouchModeUI, syncProgressUI } from './ui.js';
+import { initMultiplayerFromUrl } from './multiplayer.js';
 
 function bootstrapApp() {
   initCanvasPolyfills();
@@ -29,6 +30,7 @@ function bootstrapApp() {
   initClouds();
   initNightStars();
   initInputListeners();
+  initMultiplayerFromUrl();
 
   const startLoop = () => {
     resizeCanvas();

@@ -11,6 +11,7 @@ import { drawStar } from './render/utils.js';
 import { spawnExplosion } from './render/world.js';
 import { state, missionsState, upgrades, player, triggerHaptic } from './state.js';
 import { getAvailableUpgradeCount, saveProgressState, getTurboDuration, getCoffeeFreezeDuration } from './storage.js';
+import { sendMpCrash, updateMultiplayerGameOverUI } from './multiplayer.js';
 
 export function syncTouchModeUI() {
   const isSplit = state.touchControlMode === 'split';
@@ -626,13 +627,16 @@ export function finalizeGameOver() {
   if (dom.hudWindPill) dom.hudWindPill.classList.add('hidden');
   dom.hudShieldPill.classList.add('hidden');
   dom.hudComboPill.classList.add('hidden');
+  if (dom.hudMpPill) dom.hudMpPill.classList.add('hidden');
   dom.hudLeftSpacer.classList.remove('hidden');
+  updateMultiplayerGameOverUI();
   dom.gameOverOverlay.classList.remove('hidden');
   syncTouchZoneGuides();
 }
 
 export function triggerGameOver(reasonText, isTimeout = false, obsType = 'generic', withFreeze = true) {
   if (state.gameState === 'GAMEOVER' || state.gameState === 'IMPACT') return;
+  sendMpCrash(state.distanceMeters, state.score);
   const comicWords = ['BATEU!', 'CRASH!'];
   state.lastImpactMeta = {
     reasonText,

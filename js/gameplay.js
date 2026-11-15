@@ -5,12 +5,13 @@
 import { audio } from './audio.js';
 import { LOGICAL_HEIGHT, MIN_LOGICAL_WIDTH, ACT2_DISTANCE, ACT3_DISTANCE, ceilingY, HOURS_PER_SECOND } from './config.js';
 import { canvas, dom, ctx } from './dom.js';
-import { drawTransitionProps, drawPlayer, drawImpactComedyEffects } from './render/player.js';
+import { drawTransitionProps, drawRemoteRivals, drawPlayer, drawImpactComedyEffects } from './render/player.js';
 import { drawPursuer } from './render/pursuers.js';
 import { spawnExplosion, addFloatingText, spawnDust, drawBackground, drawCollectibles, drawObstacles, drawParticlesAndEffects } from './render/world.js';
 import { state, player, triggerHaptic, upgrades, saySpeech, adjustPursuerGap } from './state.js';
 import { saveProgressState, rollCompletedMissions, resetPerRunMissions, getShieldPostInvuln, getMagnetRadius, getCoffeeFreezeDuration, getTurboDuration } from './storage.js';
 import { closeGarage, syncProgressUI, syncActHUD, updateHUD, showActBanner, showControlHintForAct, finalizeGameOver, trackMissionProgress, addRunStars, triggerGameOver, registerComboHit } from './ui.js';
+import { mpState, nextRand, seedMatchPrng, sendMpTick, updateMultiplayerHUD, registerMatchStartHandler } from './multiplayer.js';
 
 export function resizeCanvas() {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -166,11 +167,21 @@ export function togglePause(forceState) {
   syncTouchZoneGuides();
 }
 
-export function startGame() {
+export function startGame(fromMultiplayer = false) {
   audio.init();
   closeGarage();
   rollCompletedMissions();
   resetPerRunMissions();
+
+  if (fromMultiplayer) {
+    mpState.inMatch = true;
+    state.selectedGameMode = mpState.mode || state.selectedGameMode;
+    seedMatchPrng(mpState.seed);
+  } else {
+    mpState.inMatch = false;
+  }
+  if (dom.gameOverMpBanner) dom.gameOverMpBanner.classList.add('hidden');
+  if (dom.hudMpPill) dom.hudMpPill.classList.toggle('hidden', !(fromMultiplayer && mpState.connected));
 
   const startAct = state.selectedGameMode === 'classic' ? 3 : 1;
   audio.startMusic(startAct);
@@ -269,6 +280,9 @@ export function startGame() {
 
 export function returnToMenu() {
   saveProgressState();
+  mpState.inMatch = false;
+  if (dom.hudMpPill) dom.hudMpPill.classList.add('hidden');
+  if (dom.gameOverMpBanner) dom.gameOverMpBanner.classList.add('hidden');
   state.gameState = 'START';
   state.isPaused = false;
   state.isHoldingAction = false;
@@ -357,7 +371,7 @@ export function spawnObstacle() {
 
   if (state.currentAct === 1) {
     // ATO 1 (A pé no Planalto): Tripés, Faixas, Cavaletes, Drones e Microfone Boom suspenso
-    const roll = Math.random();
+    const roll = nextRand();
     if (roll < 0.24) {
       state.obstacles.push({
         type: 'camera_tripod',
@@ -375,8 +389,8 @@ export function spawnObstacle() {
         y: state.groundY,
         width: 82,
         height: 56,
-        slogan: slogans[Math.floor(Math.random() * slogans.length)],
-        phase: Math.random() * Math.PI * 2
+        slogan: slogans[Math.floor(nextRand() * slogans.length)],
+        phase: nextRand() * Math.PI * 2
       });
     } else if (roll < 0.68) {
       state.obstacles.push({
@@ -396,7 +410,7 @@ export function spawnObstacle() {
         baseY: hoverBase,
         width: 64,
         height: 36,
-        phase: Math.random() * Math.PI * 2,
+        phase: nextRand() * Math.PI * 2,
         blink: 0
       });
     } else {
@@ -409,13 +423,13 @@ export function spawnObstacle() {
         baseY: hoverBase,
         width: 66,
         height: 34,
-        phase: Math.random() * Math.PI * 2,
+        phase: nextRand() * Math.PI * 2,
         blink: 0
       });
     }
   } else if (state.currentAct === 2) {
     // ATO 2 (De Carro no Eixo): Cones, Blitz Vermelha, Radar Móvel e Martelo Rolante
-    const roll = Math.random();
+    const roll = nextRand();
     if (roll < 0.30) {
       state.obstacles.push({
         type: 'traffic_cones',
@@ -455,10 +469,10 @@ export function spawnObstacle() {
     // ATO 3 (De Avião): Martelos da Toga, Bloqueios Vermelhos, Helicóptero da Imprensa e Processos
     const act3Dist = state.selectedGameMode === 'classic' ? state.distanceMeters : Math.max(0, state.distanceMeters - ACT3_DISTANCE);
     const difficulty = Math.min(1, act3Dist / 1400);
-    const roll = Math.random();
+    const roll = nextRand();
 
-    if (difficulty >= 0.14 && Math.random() < 0.22) {
-      const y = ceilingY + 95 + Math.random() * (state.groundY - ceilingY - 190);
+    if (difficulty >= 0.14 && nextRand() < 0.22) {
+      const y = ceilingY + 95 + nextRand() * (state.groundY - ceilingY - 190);
       state.obstacles.push({
         type: 'sky_helicopter',
         x: spawnX,
@@ -468,11 +482,11 @@ export function spawnObstacle() {
         height: 42,
         bobAmp: 38,
         bobFreq: 1.9,
-        time: Math.random() * Math.PI * 2,
+        time: nextRand() * Math.PI * 2,
         blink: 0
       });
     } else if (roll < 0.36) {
-      const y = ceilingY + 95 + Math.random() * (state.groundY - ceilingY - 190);
+      const y = ceilingY + 95 + nextRand() * (state.groundY - ceilingY - 190);
       state.obstacles.push({
         type: 'sky_gavel',
         x: spawnX,
@@ -481,15 +495,15 @@ export function spawnObstacle() {
         radius: 36,
         angle: 0,
         spinSpeed: 2.2 + difficulty * 1.4,
-        bobAmp: 34 + Math.random() * 24,
-        bobFreq: 1.8 + Math.random() * 0.8,
-        time: Math.random() * Math.PI * 2
+        bobAmp: 34 + nextRand() * 24,
+        bobFreq: 1.8 + nextRand() * 0.8,
+        time: nextRand() * Math.PI * 2
       });
     } else if (roll < 0.72) {
-      const placement = Math.floor(Math.random() * 3);
+      const placement = Math.floor(nextRand() * 3);
       const barW = 54;
       const barH = placement === 2 ? 140 + difficulty * 45 : 180 + difficulty * 60;
-      const barY = placement === 0 ? 0 : placement === 1 ? state.groundY - barH : ceilingY + 95 + Math.random() * (state.groundY - ceilingY - barH - 190);
+      const barY = placement === 0 ? 0 : placement === 1 ? state.groundY - barH : ceilingY + 95 + nextRand() * (state.groundY - ceilingY - barH - 190);
       state.obstacles.push({
         type: 'sky_barrier',
         x: spawnX,
@@ -499,7 +513,7 @@ export function spawnObstacle() {
         blink: 0
       });
     } else {
-      const targetY = Math.max(ceilingY + 60, Math.min(state.groundY - 60, player.y + (Math.random() - 0.5) * 140));
+      const targetY = Math.max(ceilingY + 60, Math.min(state.groundY - 60, player.y + (nextRand() - 0.5) * 140));
       audio.playWarningBeep();
       state.obstacles.push({
         type: 'sky_dossier',
@@ -520,7 +534,7 @@ export function spawnCollectibles() {
 
   if (state.currentAct === 1 || state.currentAct === 2) {
     const canSpawnRamp = state.currentAct === 2 && !state.obstacles.some((o) => Math.abs(o.x - spawnX) < 160);
-    const roll = Math.random();
+    const roll = nextRand();
     if (canSpawnRamp && roll < 0.16) {
       // Rampa amarela de escape no asfalto (apenas com pista livre à frente)
       const y = state.groundY - 12;
@@ -570,22 +584,22 @@ export function spawnCollectibles() {
     }
   } else {
     // Coletáveis do Ato 3 (Voo): Escudo, Turbo, Corrente de Jato e Anéis Aéreos de Bônus
-    const roll = Math.random();
+    const roll = nextRand();
     if (roll < 0.14 && !player.hasShield) {
-      const y = ceilingY + 90 + Math.random() * (state.groundY - ceilingY - 180);
+      const y = ceilingY + 90 + nextRand() * (state.groundY - ceilingY - 180);
       state.collectibles.push({ type: 'shield', x: spawnX, y, baseY: y, radius: 22, phase: 0 });
     } else if (roll < 0.26 && player.turboTimer <= 0) {
-      const y = ceilingY + 90 + Math.random() * (state.groundY - ceilingY - 180);
+      const y = ceilingY + 90 + nextRand() * (state.groundY - ceilingY - 180);
       state.collectibles.push({ type: 'turbo', x: spawnX, y, baseY: y, radius: 22, phase: 0 });
     } else if (roll < 0.44 && state.tailwindTimer <= 0) {
-      const y = ceilingY + 95 + Math.random() * (state.groundY - ceilingY - 190);
+      const y = ceilingY + 95 + nextRand() * (state.groundY - ceilingY - 190);
       state.collectibles.push({ type: 'wind_stream', x: spawnX, y, baseY: y, radius: 26, phase: 0 });
     } else if (roll < 0.60) {
-      const y = ceilingY + 100 + Math.random() * (state.groundY - ceilingY - 200);
+      const y = ceilingY + 100 + nextRand() * (state.groundY - ceilingY - 200);
       state.collectibles.push({ type: 'ring', x: spawnX, y, baseY: y, radius: 30, phase: 0 });
     } else {
-      const count = 3 + Math.floor(Math.random() * 2);
-      const startY = ceilingY + 110 + Math.random() * (state.groundY - ceilingY - 220);
+      const count = 3 + Math.floor(nextRand() * 2);
+      const startY = ceilingY + 110 + nextRand() * (state.groundY - ceilingY - 220);
       for (let i = 0; i < count; i++) {
         const arcOffset = Math.sin((i / Math.max(1, count - 1)) * Math.PI) * 42;
         const sy = Math.max(ceilingY + 50, Math.min(state.groundY - 50, startY - arcOffset));
@@ -1071,14 +1085,17 @@ export function update(dt) {
     const speedRef = state.currentAct === 1 ? 375 : state.currentAct === 2 ? 500 : 480;
     const speedFactor = Math.max(0.68, speedRef / Math.max(300, state.currentSpeed));
     const baseInterval = (state.currentAct === 1 ? 1.44 : state.currentAct === 2 ? 1.36 : 1.30) * speedFactor;
-    state.obstacleTimer = baseInterval + Math.random() * 0.38;
+    state.obstacleTimer = baseInterval + nextRand() * 0.38;
   }
 
   state.collectibleTimer -= dt;
   if (state.collectibleTimer <= 0) {
     spawnCollectibles();
-    state.collectibleTimer = 1.48 + Math.random() * 0.65;
+    state.collectibleTimer = 1.48 + nextRand() * 0.65;
   }
+
+  sendMpTick();
+  updateMultiplayerHUD();
 
   // Hitbox do jogador adaptada ao ato atual e agachamento
   const pBox = getPlayerHitbox();
@@ -1469,12 +1486,15 @@ export function render() {
   drawTransitionProps();
   drawCollectibles();
   drawObstacles();
+  drawRemoteRivals();
   drawPlayer();
   drawImpactComedyEffects();
   drawParticlesAndEffects();
 
   ctx.restore();
 }
+
+registerMatchStartHandler(() => startGame(true));
 
 export function gameLoop(timestamp) {
   if (state.lastTimestamp === 0) state.lastTimestamp = timestamp;

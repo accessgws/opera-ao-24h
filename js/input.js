@@ -7,18 +7,21 @@ import { dom, canvas } from './dom.js';
 import { resizeCanvas, render, syncTouchZoneGuides, handleDuckOrFastFall, pulseTouchPill, handleActionPress, handleActionRelease, togglePause, startGame, returnToMenu } from './gameplay.js';
 import { state } from './state.js';
 import { closeGarage, toggleMutePreference, cycleRoast, generateAndDownloadShareCard, toggleMusicPreference, toggleTouchModePreference, openGarage } from './ui.js';
+import { mpState, openMultiplayer, closeMultiplayer, connectToRoom, leaveRoom, requestMpStartMatch, sendMpSkin, sendMpMode, generateRoomCode, sanitizeRoomCode } from './multiplayer.js';
 
 export function initInputListeners() {
   dom.btnModeCampaign.addEventListener('click', () => {
     state.selectedGameMode = 'campaign';
     dom.btnModeCampaign.className = 'rounded-xl py-2 px-2.5 sm:px-3 text-[11px] sm:text-xs font-extrabold uppercase tracking-wider transition cursor-pointer bg-sky-500 text-white shadow';
     dom.btnModeClassic.className = 'rounded-xl py-2 px-2.5 sm:px-3 text-[11px] sm:text-xs font-extrabold uppercase tracking-wider transition cursor-pointer text-slate-300 hover:text-white';
+    sendMpMode('campaign');
   });
 
   dom.btnModeClassic.addEventListener('click', () => {
     state.selectedGameMode = 'classic';
     dom.btnModeClassic.className = 'rounded-xl py-2 px-2.5 sm:px-3 text-[11px] sm:text-xs font-extrabold uppercase tracking-wider transition cursor-pointer bg-emerald-500 text-white shadow';
     dom.btnModeCampaign.className = 'rounded-xl py-2 px-2.5 sm:px-3 text-[11px] sm:text-xs font-extrabold uppercase tracking-wider transition cursor-pointer text-slate-300 hover:text-white';
+    sendMpMode('classic');
   });
 
   dom.skinButtons.forEach((btn) => {
@@ -30,6 +33,7 @@ export function initInputListeners() {
           ? 'skin-btn rounded-2xl bg-sky-500/25 border border-sky-400/75 p-1.5 sm:p-2 text-center transition cursor-pointer shadow flex flex-col items-center'
           : 'skin-btn rounded-2xl bg-white/5 border border-white/10 p-1.5 sm:p-2 text-center transition cursor-pointer hover:border-white/30 flex flex-col items-center';
       });
+      sendMpSkin(state.selectedSkin);
     });
   });
 
@@ -94,6 +98,14 @@ export function initInputListeners() {
   canvas.addEventListener('pointerleave', handleActionRelease);
 
   window.addEventListener('keydown', (e) => {
+    if (dom.multiplayerOverlay && !dom.multiplayerOverlay.classList.contains('hidden')) {
+      if (e.code === 'Escape') {
+        e.preventDefault();
+        closeMultiplayer();
+      }
+      return;
+    }
+
     if (dom.garageOverlay && !dom.garageOverlay.classList.contains('hidden')) {
       if (e.code === 'Escape') {
         e.preventDefault();
@@ -346,4 +358,83 @@ export function initInputListeners() {
       dom.btnCopyText.textContent = 'Copiar Texto';
     }, 2400);
   });
+
+  if (dom.btnOpenMultiplayer) {
+    dom.btnOpenMultiplayer.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openMultiplayer();
+    });
+  }
+
+  if (dom.btnCloseMultiplayer) {
+    dom.btnCloseMultiplayer.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeMultiplayer();
+    });
+  }
+
+  if (dom.btnMpCreateRoom) {
+    dom.btnMpCreateRoom.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const code = generateRoomCode();
+      if (dom.mpRoomCodeInput) dom.mpRoomCodeInput.value = code;
+      connectToRoom(code);
+    });
+  }
+
+  if (dom.btnMpJoinRoom) {
+    dom.btnMpJoinRoom.addEventListener('click', (e) => {
+      e.stopPropagation();
+      connectToRoom(dom.mpRoomCodeInput ? dom.mpRoomCodeInput.value : '');
+    });
+  }
+
+  if (dom.mpRoomCodeInput) {
+    dom.mpRoomCodeInput.addEventListener('input', () => {
+      dom.mpRoomCodeInput.value = sanitizeRoomCode(dom.mpRoomCodeInput.value);
+    });
+    dom.mpRoomCodeInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        connectToRoom(dom.mpRoomCodeInput.value);
+      }
+    });
+  }
+
+  if (dom.btnMpCopyLink) {
+    dom.btnMpCopyLink.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!mpState.roomCode) return;
+      const inviteUrl = `${location.origin}${location.pathname}?sala=${encodeURIComponent(mpState.roomCode)}`;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(inviteUrl).catch(() => {});
+      }
+      const prev = dom.btnMpCopyLink.textContent;
+      dom.btnMpCopyLink.textContent = 'Link Copiado!';
+      setTimeout(() => {
+        if (dom.btnMpCopyLink) dom.btnMpCopyLink.textContent = prev;
+      }, 2000);
+    });
+  }
+
+  if (dom.btnMpLeaveRoom) {
+    dom.btnMpLeaveRoom.addEventListener('click', (e) => {
+      e.stopPropagation();
+      leaveRoom(true);
+    });
+  }
+
+  if (dom.btnMpStartMatch) {
+    dom.btnMpStartMatch.addEventListener('click', (e) => {
+      e.stopPropagation();
+      requestMpStartMatch();
+    });
+  }
+
+  if (dom.btnGameOverMpRoom) {
+    dom.btnGameOverMpRoom.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openMultiplayer();
+    });
+  }
 }

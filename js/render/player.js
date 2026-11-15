@@ -7,6 +7,83 @@ import { ctx } from '../dom.js';
 import { getPlayerHitbox } from '../gameplay.js';
 import { getTimeOfDayState, drawStar } from './utils.js';
 import { state, player } from '../state.js';
+import { mpState } from '../multiplayer.js';
+
+let activeRivalOverride = null;
+
+function getRenderSkin() {
+  return activeRivalOverride ? (activeRivalOverride.skin || 'executivo') : state.selectedSkin;
+}
+
+export function drawRemoteRivals() {
+  if (!mpState.inMatch || !mpState.connected || mpState.rivals.size === 0) return;
+
+  for (const rival of mpState.rivals.values()) {
+    const rawX = player.x + ((rival.dist || 0) - state.distanceMeters) * 5.2;
+    const clampedLeft = rawX < 46;
+    const clampedRight = rawX > state.logicalWidth - 46;
+    const rx = Math.max(46, Math.min(state.logicalWidth - 46, rawX));
+    const ry = typeof rival.y === 'number' ? rival.y : state.groundY;
+    const rAct = rival.act || 1;
+
+    ctx.save();
+    ctx.globalAlpha = rival.alive ? 0.62 : 0.28;
+
+    activeRivalOverride = rival;
+    try {
+      if (rAct === 1) {
+        drawRunningPolitician(rx, ry, player.runCycle, ry < state.groundY - 2);
+      } else if (rAct === 2) {
+        const rPitch = Math.max(-0.25, Math.min(0.25, (rival.vy || 0) * 0.0004));
+        drawExecutiveCar(rx, ry, rPitch, player.wheelAngle, true);
+      } else {
+        const rPitch = Math.max(-0.35, Math.min(0.35, (rival.vy || 0) * 0.0006));
+        drawExecutiveJet(rx, ry, rPitch, player.propAngle, player.waveAngle, true);
+      }
+    } finally {
+      activeRivalOverride = null;
+    }
+
+    if (rival.shield && rival.alive) {
+      ctx.save();
+      ctx.translate(rx, ry - (rAct === 1 ? 38 : rAct === 2 ? 22 : 0));
+      ctx.strokeStyle = '#67e8f9';
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.arc(0, 0, rAct === 2 ? 60 : 48, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Tag de identificação do rival (nome + distância / seta se fora da tela)
+    ctx.globalAlpha = rival.alive ? 0.92 : 0.6;
+    ctx.font = '800 11px Inter, sans-serif';
+    const prefix = clampedLeft ? '◄ ' : '';
+    const suffix = clampedRight ? ' ►' : '';
+    const statusText = rival.alive ? `${Math.floor(rival.dist || 0)}m` : 'CAIU';
+    const label = `${prefix}${rival.name || 'Rival'} · ${statusText}${suffix}`;
+    const tw = ctx.measureText(label).width;
+    const bw = Math.max(70, tw + 16);
+    const bh = 20;
+    const bx = Math.max(bw * 0.5 + 8, Math.min(state.logicalWidth - bw * 0.5 - 8, rx));
+    const anchorOffset = rAct === 1 ? (rival.duck ? 64 : 96) : rAct === 2 ? 56 : 42;
+    const by = Math.max(40, ry - anchorOffset);
+
+    ctx.fillStyle = rival.alive ? 'rgba(15, 23, 42, 0.82)' : 'rgba(127, 29, 29, 0.85)';
+    ctx.strokeStyle = rival.alive ? 'rgba(56, 189, 248, 0.7)' : 'rgba(248, 113, 113, 0.7)';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.roundRect(bx - bw * 0.5, by - bh, bw, bh, 8);
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.fillStyle = '#f8fafc';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, bx, by - bh * 0.5);
+    ctx.restore();
+  }
+}
 
 export function drawTransitionProps() {
   if (!state.transitionProp) return;
@@ -675,7 +752,7 @@ export function drawCaricatureHeadOn(targetCtx, scale = 1, isJumpingOrBoosting =
 }
 
 export function drawCaricatureHead(scale = 1, isJumpingOrBoosting = false) {
-  drawCaricatureHeadOn(ctx, scale, isJumpingOrBoosting, state.selectedSkin);
+  drawCaricatureHeadOn(ctx, scale, isJumpingOrBoosting, getRenderSkin());
 }
 
 export function drawArticulatedLeg(hipAngle, kneeBend, suitColor, isBackLeg) {
@@ -759,17 +836,17 @@ export function drawRunningPolitician(x, footY, cycle, inAir) {
   ctx.save();
   ctx.translate(x, footY);
 
-  const pal = getCharacterPalette(state.selectedSkin);
+  const pal = getCharacterPalette(getRenderSkin());
   const suitMain = pal.suitMain;
   const suitBack = pal.suitBack;
   const tieColor = pal.tieMain;
   const tieStripe = pal.tieAccent;
 
-  const isSliding = player.slideTimer > 0;
+  const isSliding = activeRivalOverride ? Boolean(activeRivalOverride.duck) : player.slideTimer > 0;
   const stride = Math.sin(cycle);
   const bounce = isSliding ? 2 : inAir ? -6 : Math.abs(Math.cos(cycle)) * -6;
   const bodyLean = isSliding ? -0.92 : inAir ? 0.12 : 0.18 + Math.sin(cycle * 2) * 0.03;
-  const flipping = player.isFlipping;
+  const flipping = activeRivalOverride ? false : player.isFlipping;
 
   const frontHip = isSliding ? -1.15 : flipping ? -0.95 : inAir ? -0.55 : stride * 0.78;
   const frontKnee = isSliding ? 0.25 : flipping ? 1.35 : inAir ? 0.85 : Math.max(0.1, -stride * 0.7 + 0.35);
@@ -792,7 +869,7 @@ export function drawRunningPolitician(x, footY, cycle, inAir) {
   ctx.restore();
 
   // Squash & Stretch no eixo dos pés
-  ctx.scale(player.squashX, player.squashY);
+  ctx.scale(activeRivalOverride ? 1 : player.squashX, activeRivalOverride ? 1 : player.squashY);
   ctx.translate(0, isSliding ? 20 + bounce : bounce);
 
   if (flipping) {
@@ -921,7 +998,8 @@ export function drawRunningPolitician(x, footY, cycle, inAir) {
   ctx.fill();
   ctx.stroke();
 
-  if (state.selectedSkin === 'stealth' || state.selectedSkin === 'gold') {
+  const activeSkin = getRenderSkin();
+  if (activeSkin === 'stealth' || activeSkin === 'gold') {
     ctx.strokeStyle = pal.seamTrim;
     ctx.lineWidth = 1.5;
     ctx.beginPath();
@@ -1108,7 +1186,7 @@ export function drawExecutiveCar(x, groundFootY, pitch, wheelAngle, withDriver) 
 
   const tod = getTimeOfDayState();
   const roadBounce = carAltitude === 0 ? Math.sin(wheelAngle * 2) * 1.2 : 0;
-  const bodySusp = withDriver ? player.suspOffset : 0;
+  const bodySusp = withDriver && !activeRivalOverride ? player.suspOffset : 0;
   ctx.translate(x, groundFootY - 7 + roadBounce + bodySusp);
   ctx.rotate(pitch);
 
@@ -1128,12 +1206,13 @@ export function drawExecutiveCar(x, groundFootY, pitch, wheelAngle, withDriver) 
   ctx.fill();
 
   // Carroceria blindada
+  const activeSkin = getRenderSkin();
   const carGrad = ctx.createLinearGradient(0, -40, 0, 6);
-  if (state.selectedSkin === 'gold') {
+  if (activeSkin === 'gold') {
     carGrad.addColorStop(0, '#fef9c3');
     carGrad.addColorStop(0.45, '#eab308');
     carGrad.addColorStop(1, '#713f12');
-  } else if (state.selectedSkin === 'stealth') {
+  } else if (activeSkin === 'stealth') {
     carGrad.addColorStop(0, '#312e81');
     carGrad.addColorStop(0.5, '#090d16');
     carGrad.addColorStop(1, '#020617');
@@ -1170,7 +1249,7 @@ export function drawExecutiveCar(x, groundFootY, pitch, wheelAngle, withDriver) 
   ctx.fill();
 
   if (withDriver) {
-    const pal = getCharacterPalette(state.selectedSkin);
+    const pal = getCharacterPalette(activeSkin);
     ctx.save();
     ctx.translate(10, -18);
     // Ombros do motorista + volante + braço
@@ -1213,7 +1292,7 @@ export function drawExecutiveCar(x, groundFootY, pitch, wheelAngle, withDriver) 
   // Coluna central e friso lateral por skin
   ctx.fillStyle = '#0f172a';
   ctx.fillRect(-2, -34, 4, 16);
-  ctx.fillStyle = state.selectedSkin === 'stealth' ? '#a855f7' : state.selectedSkin === 'gold' ? '#fef08a' : '#e2e8f0';
+  ctx.fillStyle = activeSkin === 'stealth' ? '#a855f7' : activeSkin === 'gold' ? '#fef08a' : '#e2e8f0';
   ctx.fillRect(-52, -12, 106, 2.5);
 
   // Giroflex no para-brisa
@@ -1246,7 +1325,7 @@ export function drawExecutiveCar(x, groundFootY, pitch, wheelAngle, withDriver) 
     ctx.fill();
     ctx.stroke();
 
-    ctx.fillStyle = state.selectedSkin === 'gold' ? '#fde047' : '#e2e8f0';
+    ctx.fillStyle = activeSkin === 'gold' ? '#fde047' : '#e2e8f0';
     ctx.beginPath();
     ctx.arc(0, 0, 7.5, 0, Math.PI * 2);
     ctx.fill();
@@ -1271,12 +1350,17 @@ export function drawExecutiveJet(x, y, pitch, propAngle, waveAngle, withPilot) {
   ctx.translate(x, y);
   ctx.rotate(pitch);
 
+  const activeSkin = getRenderSkin();
+  const rivalTurbo = activeRivalOverride ? Boolean(activeRivalOverride.turbo) : false;
+  const localTurbo = !activeRivalOverride && (player.turboTimer > 0 || state.isHoldingAction);
+
   // Chamas de propulsão / Turbo Asa
-  if (withPilot && (player.turboTimer > 0 || state.isHoldingAction)) {
-    const flameLen = player.turboTimer > 0 ? 68 : 28 + Math.sin(propAngle * 2) * 6;
+  if (withPilot && (rivalTurbo || localTurbo)) {
+    const isTurbo = activeRivalOverride ? rivalTurbo : player.turboTimer > 0;
+    const flameLen = isTurbo ? 68 : 28 + Math.sin(propAngle * 2) * 6;
     const grad = ctx.createLinearGradient(-42, 4, -42 - flameLen, 4);
     grad.addColorStop(0, '#ffffff');
-    grad.addColorStop(0.35, player.turboTimer > 0 ? '#facc15' : '#38bdf8');
+    grad.addColorStop(0.35, isTurbo ? '#facc15' : '#38bdf8');
     grad.addColorStop(1, 'rgba(245, 158, 11, 0)');
     ctx.fillStyle = grad;
     ctx.beginPath();
@@ -1288,7 +1372,7 @@ export function drawExecutiveJet(x, y, pitch, propAngle, waveAngle, withPilot) {
   }
 
   // Leme vertical traseiro com bandeira
-  ctx.fillStyle = state.selectedSkin === 'stealth' ? '#312e81' : state.selectedSkin === 'gold' ? '#ca8a04' : '#1d4ed8';
+  ctx.fillStyle = activeSkin === 'stealth' ? '#312e81' : activeSkin === 'gold' ? '#ca8a04' : '#1d4ed8';
   ctx.strokeStyle = '#0f172a';
   ctx.lineWidth = 2.4;
   ctx.beginPath();
@@ -1314,7 +1398,7 @@ export function drawExecutiveJet(x, y, pitch, propAngle, waveAngle, withPilot) {
   ctx.fill();
 
   if (withPilot) {
-    const pal = getCharacterPalette(state.selectedSkin);
+    const pal = getCharacterPalette(activeSkin);
     ctx.save();
     ctx.translate(2, -12);
     ctx.fillStyle = pal.suitMain;
@@ -1381,11 +1465,11 @@ export function drawExecutiveJet(x, y, pitch, propAngle, waveAngle, withPilot) {
 
   // Fuselagem aerodinâmica por Skin
   const bodyGrad = ctx.createLinearGradient(0, -18, 0, 18);
-  if (state.selectedSkin === 'gold') {
+  if (activeSkin === 'gold') {
     bodyGrad.addColorStop(0, '#fef9c3');
     bodyGrad.addColorStop(0.55, '#facc15');
     bodyGrad.addColorStop(1, '#a16207');
-  } else if (state.selectedSkin === 'stealth') {
+  } else if (activeSkin === 'stealth') {
     bodyGrad.addColorStop(0, '#475569');
     bodyGrad.addColorStop(0.5, '#1e293b');
     bodyGrad.addColorStop(1, '#020617');
@@ -1410,15 +1494,15 @@ export function drawExecutiveJet(x, y, pitch, propAngle, waveAngle, withPilot) {
   ctx.fill();
   ctx.stroke();
 
-  ctx.fillStyle = state.selectedSkin === 'stealth' ? '#7c3aed' : '#2563eb';
+  ctx.fillStyle = activeSkin === 'stealth' ? '#7c3aed' : '#2563eb';
   ctx.fillRect(-32, 0, 72, 5);
-  ctx.fillStyle = state.selectedSkin === 'stealth' ? '#38bdf8' : '#16a34a';
+  ctx.fillStyle = activeSkin === 'stealth' ? '#38bdf8' : '#16a34a';
   ctx.fillRect(-28, 5, 64, 2.5);
   ctx.fillStyle = '#facc15';
   ctx.fillRect(-26, 7.5, 60, 2);
 
   // Asa principal com luz de navegação
-  ctx.fillStyle = state.selectedSkin === 'stealth' ? '#312e81' : state.selectedSkin === 'gold' ? '#b45309' : '#1d4ed8';
+  ctx.fillStyle = activeSkin === 'stealth' ? '#312e81' : activeSkin === 'gold' ? '#b45309' : '#1d4ed8';
   ctx.strokeStyle = '#0f172a';
   ctx.lineWidth = 2.2;
   ctx.beginPath();

@@ -1,10 +1,28 @@
 {
   "name": "operacao-24h-voo-da-fuga",
+  "main": "worker.js",
   "compatibility_date": "2026-11-15",
   "build": {
     "command": "node scripts/build-dist.js"
   },
   "assets": {
-    "directory": "./dist"
-  }
+    "directory": "./dist",
+    "binding": "ASSETS"
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "ESCAPE_ROOM",
+        "class_name": "EscapeRoom"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "EscapeRoom"
+      ]
+    }
+  ]
 }

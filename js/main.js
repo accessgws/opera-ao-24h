@@ -34,7 +34,43 @@ function bootstrapApp() {
 
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
+      const hadController = Boolean(navigator.serviceWorker.controller);
+      let refreshing = false;
+
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!hadController || refreshing) return;
+        if (state.gameState !== 'START') return;
+        try {
+          if (sessionStorage.getItem('op24h_sw_reloaded') === '1') return;
+          sessionStorage.setItem('op24h_sw_reloaded', '1');
+        } catch (e) {}
+        refreshing = true;
+        window.location.reload();
+      });
+
+      navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then((reg) => {
+        try { sessionStorage.removeItem('op24h_sw_reloaded'); } catch (e) {}
+        reg.update().catch(() => {});
+
+        if (reg.waiting) {
+          reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+        }
+        reg.addEventListener('updatefound', () => {
+          const nextWorker = reg.installing;
+          if (!nextWorker) return;
+          nextWorker.addEventListener('statechange', () => {
+            if (nextWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              nextWorker.postMessage({ type: 'SKIP_WAITING' });
+            }
+          });
+        });
+
+        document.addEventListener('visibilitychange', () => {
+          if (!document.hidden && state.gameState === 'START') {
+            reg.update().catch(() => {});
+          }
+        });
+      }).catch(() => {});
     });
   }
 

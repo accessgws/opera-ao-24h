@@ -1,0 +1,155 @@
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: #0f172a;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+/* Superfícies em Vidro Fosco estilo Apple (Frosted Glass) */
+.frosted-card {
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 24px 48px -12px rgba(2, 6, 23, 0.78), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.frosted-pill {
+  background: rgba(15, 23, 42, 0.66);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 24px -4px rgba(2, 6, 23, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.clock-frozen {
+  background: rgba(8, 51, 68, 0.78) !important;
+  border-color: rgba(34, 211, 238, 0.7) !important;
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.35), inset 0 1px 0 rgba(165, 243, 252, 0.3) !important;
+}
+
+.clock-urgent {
+  background: rgba(127, 29, 29, 0.78) !important;
+  border-color: rgba(248, 113, 113, 0.75) !important;
+  animation: urgentPulse 0.7s ease-in-out infinite alternate;
+}
+
+.clock-endless {
+  background: rgba(6, 78, 59, 0.76) !important;
+  border-color: rgba(52, 211, 153, 0.65) !important;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.28), inset 0 1px 0 rgba(167, 243, 208, 0.25) !important;
+}
+
+.combo-pop {
+  animation: comboPop 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes comboPop {
+  0% { transform: scale(0.86); }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+@keyframes urgentPulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.04); }
+}
+
+@keyframes modalEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-modal-enter {
+  animation: modalEnter 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Scrollbar discreta em modais mobile */
+.modal-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+.modal-scroll::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 9999px;
+}
+
+/* Safe areas para notch, Dynamic Island e barras de navegação móveis */
+.hud-safe {
+  padding-top: max(0.625rem, env(safe-area-inset-top));
+  padding-left: max(0.75rem, env(safe-area-inset-left));
+  padding-right: max(0.75rem, env(safe-area-inset-right));
+}
+
+.powerup-safe {
+  top: calc(max(0.625rem, env(safe-area-inset-top)) + 3.2rem);
+  right: max(0.75rem, env(safe-area-inset-right));
+}
+
+.touch-guide-safe {
+  bottom: max(0.75rem, env(safe-area-inset-bottom));
+  padding-left: max(0.75rem, env(safe-area-inset-left));
+  padding-right: max(0.75rem, env(safe-area-inset-right));
+}
+
+@media (min-width: 640px) {
+  .hud-safe {
+    padding-top: max(0.95rem, env(safe-area-inset-top));
+    padding-left: max(1.25rem, env(safe-area-inset-left));
+    padding-right: max(1.25rem, env(safe-area-inset-right));
+  }
+  .powerup-safe {
+    top: calc(max(0.95rem, env(safe-area-inset-top)) + 3.6rem);
+    right: max(1.25rem, env(safe-area-inset-right));
+  }
+}
+
+/* Celular em modo paisagem (altura curta): layout horizontal compacto sem rolagem */
+@media (max-height: 500px) and (min-width: 560px) and (max-width: 767px) {
+  #startGrid {
+    display: grid;
+    grid-template-columns: 1.12fr 0.88fr;
+    gap: 0.9rem;
+    align-items: center;
+  }
+}
+
+@media (max-height: 500px) and (min-width: 560px) {
+  #startCard {
+    max-width: min(94vw, 760px);
+    max-height: 94dvh;
+    padding: 0.85rem 1.15rem !important;
+  }
+  .landscape-hide {
+    display: none !important;
+  }
+  #gameOverCard {
+    max-width: min(92vw, 560px);
+    max-height: 94dvh;
+    padding: 0.85rem 1.25rem !important;
+  }
+}

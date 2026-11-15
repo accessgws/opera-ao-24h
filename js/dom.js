@@ -1,0 +1,128 @@
+// =============================================================================
+// REFERÊNCIAS DO DOM E POLYFILL DE CANVAS
+// =============================================================================
+
+export function initCanvasPolyfills() {
+  if (typeof CanvasRenderingContext2D !== 'undefined' && !CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, radii) {
+      const r = typeof radii === 'number' ? radii : (Array.isArray(radii) ? radii[0] : 0) || 0;
+      const rr = Math.min(r, Math.abs(w) / 2, Math.abs(h) / 2);
+      this.beginPath();
+      this.moveTo(x + rr, y);
+      this.arcTo(x + w, y, x + w, y + h, rr);
+      this.arcTo(x + w, y + h, x, y + h, rr);
+      this.arcTo(x, y + h, x, y, rr);
+      this.arcTo(x, y, x + w, y, rr);
+      this.closePath();
+      return this;
+    };
+  }
+}
+
+export const canvas = document.getElementById('gameCanvas');
+export const ctx = canvas.getContext('2d', { alpha: false });
+
+export const dom = {
+  hudLeftGroup: document.getElementById('hudLeftGroup'),
+  hudLeftSpacer: document.getElementById('hudLeftSpacer'),
+  hudActIconWrap: document.getElementById('hudActIconWrap'),
+  svgAct1: document.getElementById('svgAct1'),
+  svgAct2: document.getElementById('svgAct2'),
+  svgAct3: document.getElementById('svgAct3'),
+  hudActLabel: document.getElementById('hudActLabel'),
+  hudDistance: document.getElementById('hudDistance'),
+  hudScore: document.getElementById('hudScore'),
+  hudRouteWrap: document.getElementById('hudRouteWrap'),
+  hudRouteFill: document.getElementById('hudRouteFill'),
+  hudPursuitWrap: document.getElementById('hudPursuitWrap'),
+  hudPursuitFill: document.getElementById('hudPursuitFill'),
+  hudPursuitText: document.getElementById('hudPursuitText'),
+  hudComboPill: document.getElementById('hudComboPill'),
+  hudComboMult: document.getElementById('hudComboMult'),
+  hudStarsValue: document.getElementById('hudStarsValue'),
+  hudClockPill: document.getElementById('hudClockPill'),
+  svgClockIcon: document.getElementById('svgClockIcon'),
+  hudClockSubtitle: document.getElementById('hudClockSubtitle'),
+  hudClockValue: document.getElementById('hudClockValue'),
+  hudTurboPill: document.getElementById('hudTurboPill'),
+  hudTurboTime: document.getElementById('hudTurboTime'),
+  hudTurboFill: document.getElementById('hudTurboFill'),
+  hudCoffeePill: document.getElementById('hudCoffeePill'),
+  hudCoffeeTime: document.getElementById('hudCoffeeTime'),
+  hudCoffeeFill: document.getElementById('hudCoffeeFill'),
+  hudWindPill: document.getElementById('hudWindPill'),
+  hudWindTime: document.getElementById('hudWindTime'),
+  hudWindFill: document.getElementById('hudWindFill'),
+  hudShieldPill: document.getElementById('hudShieldPill'),
+  btnPause: document.getElementById('btnPause'),
+  iconPause: document.getElementById('iconPause'),
+  iconResume: document.getElementById('iconResume'),
+  pauseOverlay: document.getElementById('pauseOverlay'),
+  btnResume: document.getElementById('btnResume'),
+  btnPauseMusic: document.getElementById('btnPauseMusic'),
+  btnPauseMusicText: document.getElementById('btnPauseMusicText'),
+  btnPauseTouchMode: document.getElementById('btnPauseTouchMode'),
+  btnPauseTouchModeText: document.getElementById('btnPauseTouchModeText'),
+  btnPauseRestart: document.getElementById('btnPauseRestart'),
+  btnPauseMenu: document.getElementById('btnPauseMenu'),
+  btnMute: document.getElementById('btnMute'),
+  iconAudioOn: document.getElementById('iconAudioOn'),
+  iconAudioOff: document.getElementById('iconAudioOff'),
+  btnFullscreen: document.getElementById('btnFullscreen'),
+  iconFsEnter: document.getElementById('iconFsEnter'),
+  iconFsExit: document.getElementById('iconFsExit'),
+  actBanner: document.getElementById('actBanner'),
+  actBannerTag: document.getElementById('actBannerTag'),
+  actBannerTitle: document.getElementById('actBannerTitle'),
+  missionToast: document.getElementById('missionToast'),
+  missionToastTitle: document.getElementById('missionToastTitle'),
+  missionToastReward: document.getElementById('missionToastReward'),
+  controlHint: document.getElementById('controlHint'),
+  controlHintText: document.getElementById('controlHintText'),
+  touchZoneGuides: document.getElementById('touchZoneGuides'),
+  touchPillLeft: document.getElementById('touchPillLeft'),
+  touchPillRight: document.getElementById('touchPillRight'),
+  startOverlay: document.getElementById('startOverlay'),
+  startHighScore: document.getElementById('startHighScore'),
+  startTotalStars: document.getElementById('startTotalStars'),
+  btnOpenGarage: document.getElementById('btnOpenGarage'),
+  garageBadge: document.getElementById('garageBadge'),
+  btnStart: document.getElementById('btnStart'),
+  btnStartMusic: document.getElementById('btnStartMusic'),
+  btnStartMusicText: document.getElementById('btnStartMusicText'),
+  btnTouchMode: document.getElementById('btnTouchMode'),
+  btnTouchModeText: document.getElementById('btnTouchModeText'),
+  btnModeCampaign: document.getElementById('btnModeCampaign'),
+  btnModeClassic: document.getElementById('btnModeClassic'),
+  skinButtons: document.querySelectorAll('.skin-btn'),
+  gameOverOverlay: document.getElementById('gameOverOverlay'),
+  newRecordBadge: document.getElementById('newRecordBadge'),
+  gameOverTitle: document.getElementById('gameOverTitle'),
+  gameOverReason: document.getElementById('gameOverReason'),
+  finalRankBadge: document.getElementById('finalRankBadge'),
+  finalRoastText: document.getElementById('finalRoastText'),
+  btnSwapRoast: document.getElementById('btnSwapRoast'),
+  finalScore: document.getElementById('finalScore'),
+  finalHighScore: document.getElementById('finalHighScore'),
+  finalDistance: document.getElementById('finalDistance'),
+  finalAct: document.getElementById('finalAct'),
+  finalStatCombo: document.getElementById('finalStatCombo'),
+  finalStatNearMiss: document.getElementById('finalStatNearMiss'),
+  finalStatStars: document.getElementById('finalStatStars'),
+  btnRestart: document.getElementById('btnRestart'),
+  btnDownloadCard: document.getElementById('btnDownloadCard'),
+  btnDownloadCardText: document.getElementById('btnDownloadCardText'),
+  btnCopyResult: document.getElementById('btnCopyResult'),
+  iconCopy: document.getElementById('iconCopy'),
+  iconCopied: document.getElementById('iconCopied'),
+  btnCopyText: document.getElementById('btnCopyText'),
+  btnGameOverGarage: document.getElementById('btnGameOverGarage'),
+  gameOverGarageBadge: document.getElementById('gameOverGarageBadge'),
+  btnGameOverMenu: document.getElementById('btnGameOverMenu'),
+  garageOverlay: document.getElementById('garageOverlay'),
+  garageTotalStars: document.getElementById('garageTotalStars'),
+  btnCloseGarage: document.getElementById('btnCloseGarage'),
+  garageMissionsList: document.getElementById('garageMissionsList'),
+  garageUpgradesList: document.getElementById('garageUpgradesList'),
+  bgmAudio: document.getElementById('bgmAudio')
+};

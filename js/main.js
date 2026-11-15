@@ -37,6 +37,15 @@ function bootstrapApp() {
       const hadController = Boolean(navigator.serviceWorker.controller);
       let refreshing = false;
 
+      const showUpdateScreen = (text, percent) => {
+        if (state.gameState !== 'START') return;
+        if (dom.pwaUpdateOverlay) dom.pwaUpdateOverlay.classList.remove('hidden');
+        if (dom.pwaUpdateText && text) dom.pwaUpdateText.textContent = text;
+        if (dom.pwaUpdateBar && typeof percent === 'number') {
+          dom.pwaUpdateBar.style.width = `${percent}%`;
+        }
+      };
+
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (!hadController || refreshing) return;
         if (state.gameState !== 'START') return;
@@ -45,21 +54,27 @@ function bootstrapApp() {
           sessionStorage.setItem('op24h_sw_reloaded', '1');
         } catch (e) {}
         refreshing = true;
-        window.location.reload();
+        showUpdateScreen('Aplicando atualização! Reiniciando...', 100);
+        setTimeout(() => window.location.reload(), 350);
       });
 
       navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then((reg) => {
         try { sessionStorage.removeItem('op24h_sw_reloaded'); } catch (e) {}
         reg.update().catch(() => {});
 
-        if (reg.waiting) {
+        if (reg.waiting && hadController) {
+          showUpdateScreen('Instalando versão mais recente...', 80);
           reg.waiting.postMessage({ type: 'SKIP_WAITING' });
         }
         reg.addEventListener('updatefound', () => {
           const nextWorker = reg.installing;
           if (!nextWorker) return;
+          if (hadController) {
+            showUpdateScreen('Baixando nova atualização...', 45);
+          }
           nextWorker.addEventListener('statechange', () => {
             if (nextWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              showUpdateScreen('Instalando versão mais recente...', 85);
               nextWorker.postMessage({ type: 'SKIP_WAITING' });
             }
           });

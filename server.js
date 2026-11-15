@@ -4,7 +4,7 @@ const path = require('path');
 
 const PORT = Number(process.env.PORT) || 3000;
 const ROOT_DIR = __dirname;
-const DEFAULT_FILE = 'opera_o_24h_voo_da_fuga.html';
+const DEFAULT_FILE = 'index.html';
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',

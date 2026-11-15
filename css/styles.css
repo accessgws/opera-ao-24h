@@ -128,28 +128,97 @@ canvas {
   }
 }
 
-/* Celular em modo paisagem (altura curta): layout horizontal compacto sem rolagem */
 @media (max-height: 500px) and (min-width: 560px) and (max-width: 767px) {
   #startGrid {
     display: grid;
-    grid-template-columns: 1.12fr 0.88fr;
-    gap: 0.9rem;
+    grid-template-columns: 1.08fr 0.92fr;
+    gap: 0.75rem;
     align-items: center;
   }
 }
 
+/* Celular em modo paisagem (altura curta): layout horizontal compacto sem rolagem */
 @media (max-height: 500px) and (min-width: 560px) {
+  #startGrid {
+    gap: 0.75rem !important;
+  }
+  .hud-safe {
+    padding-top: max(0.35rem, env(safe-area-inset-top));
+    padding-left: max(0.65rem, env(safe-area-inset-left));
+    padding-right: max(0.65rem, env(safe-area-inset-right));
+  }
+  .powerup-safe {
+    top: calc(max(0.35rem, env(safe-area-inset-top)) + 2.65rem);
+    right: max(0.65rem, env(safe-area-inset-right));
+  }
+  .touch-guide-safe {
+    bottom: max(0.4rem, env(safe-area-inset-bottom));
+  }
+  #hud .frosted-pill {
+    padding: 0.32rem 0.55rem !important;
+    border-radius: 0.85rem !important;
+  }
+  #hudClockSubtitle {
+    display: none;
+  }
+  #hudRouteWrap,
+  #hudPursuitWrap {
+    margin-top: 0.15rem !important;
+  }
+  #actBanner {
+    top: max(2.85rem, calc(env(safe-area-inset-top) + 2.45rem)) !important;
+    transform: translateX(-50%) scale(0.88);
+  }
+  #missionToast {
+    top: max(2.75rem, calc(env(safe-area-inset-top) + 2.35rem)) !important;
+    transform: translateX(-50%) scale(0.9);
+  }
+  #controlHint {
+    bottom: max(0.35rem, env(safe-area-inset-bottom)) !important;
+    transform: translateX(-50%) scale(0.9);
+  }
   #startCard {
-    max-width: min(94vw, 760px);
-    max-height: 94dvh;
-    padding: 0.85rem 1.15rem !important;
+    max-width: min(94vw, 720px);
+    max-height: 92dvh;
+    padding: 0.65rem 1rem !important;
+  }
+  #startCard h1 {
+    font-size: 1.35rem !important;
+    line-height: 1.15 !important;
+    margin-bottom: 0.35rem !important;
+  }
+  #btnModeCampaign,
+  #btnModeClassic {
+    padding-top: 0.35rem !important;
+    padding-bottom: 0.35rem !important;
+    font-size: 0.65rem !important;
+  }
+  #startCard .skin-btn {
+    padding: 0.3rem 0.25rem !important;
+  }
+  #startCard .skin-btn canvas {
+    width: 2.35rem !important;
+    height: 1.95rem !important;
+    margin-bottom: 0.1rem !important;
+  }
+  #btnStart,
+  #btnOpenMultiplayer {
+    padding-top: 0.55rem !important;
+    padding-bottom: 0.55rem !important;
   }
   .landscape-hide {
     display: none !important;
   }
   #gameOverCard {
+    max-width: min(92vw, 540px);
+    max-height: 92dvh;
+    padding: 0.7rem 1rem !important;
+  }
+  #garageCard,
+  #multiplayerCard,
+  #pauseCard {
     max-width: min(92vw, 560px);
-    max-height: 94dvh;
-    padding: 0.85rem 1.25rem !important;
+    max-height: 92dvh;
+    padding: 0.7rem 1rem !important;
   }
 }

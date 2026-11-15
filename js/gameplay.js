@@ -140,6 +140,9 @@ export function syncTouchZoneGuides() {
     && state.lastInputWasTouch
     && state.touchControlMode === 'split';
   dom.touchZoneGuides.classList.toggle('hidden', !showGuides);
+  if (showGuides && dom.controlHint && window.innerHeight <= 500) {
+    dom.controlHint.classList.add('hidden');
+  }
   if (showGuides && dom.touchPillLeft) {
     dom.touchPillLeft.textContent = state.currentAct === 1 ? '↓ Deslizar' : '↓ Aterrissar';
   }

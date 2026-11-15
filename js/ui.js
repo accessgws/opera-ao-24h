@@ -283,23 +283,24 @@ export function showActBanner(tag, title) {
 
 export function showControlHintForAct(act) {
   const useTouchHint = state.lastInputWasTouch || IS_COARSE_POINTER;
+  if (useTouchHint && state.touchControlMode === 'split' && act < 3) {
+    if (dom.controlHint) dom.controlHint.classList.add('hidden');
+    state.controlHintTimer = 0;
+    return;
+  }
   if (act === 1) {
     dom.controlHintText.textContent = useTouchHint
-      ? (state.touchControlMode === 'split'
-          ? 'Direita: Pulo Duplo  •  Esquerda: Agachar'
-          : 'Toque: Pulo Duplo  •  Deslize ↓: Agachar')
+      ? 'Toque: Pulo Duplo  •  Deslize ↓: Agachar'
       : 'Toque / Espaço: Pulo Duplo  •  ↓ / Deslize: Agachar';
   } else if (act === 2) {
     dom.controlHintText.textContent = useTouchHint
-      ? (state.touchControlMode === 'split'
-          ? 'Direita: Salto Hidráulico  •  Esquerda: Aterrissar'
-          : 'Toque: Salto Hidráulico  •  Deslize ↓: Aterrissar')
+      ? 'Toque: Salto Hidráulico  •  Deslize ↓: Aterrissar'
       : 'Toque / Espaço: Salto Hidráulico  •  ↓: Aterrissar Rápido';
   } else {
     dom.controlHintText.textContent = 'Segure: Subir  •  Solte: Planar  •  Passe pelos Anéis!';
   }
   dom.controlHint.classList.remove('hidden');
-  state.controlHintTimer = 4.2;
+  state.controlHintTimer = 3.0;
 }
 
 export function getComboMultiplier() {

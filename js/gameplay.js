@@ -736,7 +736,8 @@ export function update(dt) {
     const act3Progress = Math.min(1, Math.max(0, baseDist) / 1400);
     const turboMult = player.turboTimer > 0 ? 1.55 : 1.0;
     const tailwindMult = state.tailwindTimer > 0 ? 1.22 : 1.0;
-    state.currentSpeed = (420 + act3Progress * 280) * turboMult * tailwindMult;
+    const fabBonus = state.endlessFlightSeconds >= 45 ? 65 : state.endlessFlightSeconds >= 20 ? 30 : 0;
+    state.currentSpeed = (420 + act3Progress * 280 + fabBonus) * turboMult * tailwindMult;
   }
 
   const deltaMeters = state.currentSpeed * dt * 0.068;
@@ -803,7 +804,15 @@ export function update(dt) {
       }
     }
   } else {
+    const prevFlight = state.endlessFlightSeconds;
     state.endlessFlightSeconds += dt;
+    if (prevFlight < 20 && state.endlessFlightSeconds >= 20) {
+      showActBanner('FAB Acelerando! +Velocidade', 'CAÇA F-5M TIGER NA COLA!');
+      saySpeech('Eita, mandaram um caça!', 2.4);
+    } else if (prevFlight < 45 && state.endlessFlightSeconds >= 45) {
+      showActBanner('Alerta Máximo! Interceptação', 'JATO F-39 GRIPEN DA FAB!');
+      saySpeech('Agora é jato supersônico!!', 2.4);
+    }
   }
 
   // -----------------------------------------------------------------------

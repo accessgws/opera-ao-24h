@@ -439,18 +439,261 @@ export function drawPursuer() {
       ctx.fill();
       ctx.restore();
     }
-  } else if (state.gameState === 'PLAYING' && state.endlessFlightSeconds < 12) {
-    // Helicóptero da imprensa nos primeiros segundos do voo
-    const hy = Math.max(ceilingY + 46, Math.min(state.groundY - 70, player.y - 36 + Math.sin(state.endlessFlightSeconds * 3) * 10));
-    ctx.translate(Math.max(48, player.x - 140), hy);
-    ctx.fillStyle = 'rgba(185, 28, 28, 0.88)';
-    ctx.beginPath();
-    ctx.ellipse(0, 0, 26, 13, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillRect(-44, -3, 22, 5);
-    const rotorW = 28 * Math.abs(Math.sin(performance.now() * 0.04)) + 8;
-    ctx.fillStyle = '#cbd5e1';
-    ctx.fillRect(-rotorW, -18, rotorW * 2, 3);
+  } else if (state.gameState === 'PLAYING' || state.gameState === 'IMPACT') {
+    // Avião perseguidor da FAB no Ato 3: evolui com o tempo (Tucano -> F-5M -> Jato Gripen)
+    const t = state.endlessFlightSeconds;
+    const stage = t >= 45 ? 3 : t >= 20 ? 2 : 1;
+    const nowT = performance.now();
+    const behind = stage === 1 ? 154 : stage === 2 ? 136 : 118;
+    const px = Math.max(56, player.x - behind);
+    const py = Math.max(ceilingY + 46, Math.min(state.groundY - 58, player.y - 24 + Math.sin(t * (2.2 + stage * 0.4)) * 10));
+    const pitch = Math.max(-0.22, Math.min(0.22, (player.y - py) * 0.0025));
+
+    ctx.translate(px, py);
+    ctx.rotate(pitch);
+
+    if (stage === 1) {
+      // FASE 1: Embraer A-29 Super Tucano (FAB) — turboélice camuflado
+      // Leme vertical com bandeira/cores FAB
+      ctx.fillStyle = '#365314';
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(-28, -2);
+      ctx.lineTo(-40, -22);
+      ctx.lineTo(-22, -21);
+      ctx.lineTo(-14, -3);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#16a34a';
+      ctx.fillRect(-35, -17, 10, 4);
+      ctx.fillStyle = '#facc15';
+      ctx.fillRect(-33, -13, 8, 2.5);
+
+      // Fuselagem verde-oliva camuflada + barriga cinza
+      const tucanoGrad = ctx.createLinearGradient(0, -12, 0, 12);
+      tucanoGrad.addColorStop(0, '#4d7c0f');
+      tucanoGrad.addColorStop(0.55, '#3f6212');
+      tucanoGrad.addColorStop(1, '#94a3b8');
+      ctx.fillStyle = tucanoGrad;
+      ctx.beginPath();
+      ctx.moveTo(-34, 2);
+      ctx.lineTo(-18, -8);
+      ctx.lineTo(18, -8);
+      ctx.quadraticCurveTo(36, -5, 38, 1);
+      ctx.quadraticCurveTo(36, 9, 16, 10);
+      ctx.lineTo(-24, 7);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Canopy em tandem (2 pilotos FAB)
+      ctx.fillStyle = 'rgba(186, 230, 253, 0.72)';
+      ctx.beginPath();
+      ctx.ellipse(2, -9, 14, 5.5, 0, Math.PI, 0);
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.arc(-3, -10, 2.6, 0, Math.PI * 2);
+      ctx.arc(6, -10, 2.6, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Asa reta + cocar da FAB
+      ctx.fillStyle = '#365314';
+      ctx.beginPath();
+      ctx.moveTo(-4, 3);
+      ctx.lineTo(-14, 17);
+      ctx.lineTo(6, 17);
+      ctx.lineTo(14, 3);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#16a34a';
+      ctx.beginPath();
+      ctx.arc(-11, 1, 4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#facc15';
+      ctx.beginPath();
+      ctx.arc(-11, 1, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Spinner + Hélice frontal girando
+      ctx.fillStyle = '#facc15';
+      ctx.beginPath();
+      ctx.arc(38, 1, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+      const bladeH = 16 * Math.abs(Math.sin(nowT * 0.065)) + 3;
+      ctx.strokeStyle = 'rgba(226, 232, 240, 0.85)';
+      ctx.lineWidth = 2.6;
+      ctx.beginPath();
+      ctx.moveTo(40, 1 - bladeH);
+      ctx.lineTo(40, 1 + bladeH);
+      ctx.stroke();
+    } else if (stage === 2) {
+      // FASE 2: Caça F-5M Tiger II (FAB) — supersônico intermediário
+      // Pós-combustor laranja
+      const flameLen = 24 + Math.sin(nowT * 0.05) * 6;
+      const flameGrad = ctx.createLinearGradient(-34, 2, -34 - flameLen, 2);
+      flameGrad.addColorStop(0, '#fef08a');
+      flameGrad.addColorStop(0.5, '#f97316');
+      flameGrad.addColorStop(1, 'rgba(239, 68, 68, 0)');
+      ctx.fillStyle = flameGrad;
+      ctx.beginPath();
+      ctx.moveTo(-34, -3);
+      ctx.lineTo(-34 - flameLen, 2);
+      ctx.lineTo(-34, 7);
+      ctx.closePath();
+      ctx.fill();
+
+      // Leme alto FAB
+      ctx.fillStyle = '#64748b';
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(-28, -2);
+      ctx.lineTo(-40, -24);
+      ctx.lineTo(-24, -23);
+      ctx.lineTo(-14, -4);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#16a34a';
+      ctx.fillRect(-35, -19, 9, 3.5);
+      ctx.fillStyle = '#facc15';
+      ctx.fillRect(-33, -15.5, 8, 2.5);
+
+      // Fuselagem cinza tático afilada
+      const f5Grad = ctx.createLinearGradient(0, -10, 0, 10);
+      f5Grad.addColorStop(0, '#cbd5e1');
+      f5Grad.addColorStop(0.6, '#64748b');
+      f5Grad.addColorStop(1, '#334155');
+      ctx.fillStyle = f5Grad;
+      ctx.beginPath();
+      ctx.moveTo(-35, 3);
+      ctx.lineTo(-26, -7);
+      ctx.lineTo(14, -7);
+      ctx.lineTo(44, 1);
+      ctx.lineTo(14, 9);
+      ctx.lineTo(-35, 7);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Nariz radome escuro + cabine bolha
+      ctx.fillStyle = '#1e293b';
+      ctx.beginPath();
+      ctx.moveTo(31, -2.5);
+      ctx.lineTo(44, 1);
+      ctx.lineTo(31, 4.5);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = 'rgba(186, 230, 253, 0.78)';
+      ctx.beginPath();
+      ctx.ellipse(10, -7.5, 11, 4.5, 0, Math.PI, 0);
+      ctx.fill();
+      ctx.stroke();
+
+      // Asa enflechada + míssil na ponta
+      ctx.fillStyle = '#475569';
+      ctx.beginPath();
+      ctx.moveTo(-4, 2);
+      ctx.lineTo(-20, 16);
+      ctx.lineTo(2, 16);
+      ctx.lineTo(14, 2);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+    } else {
+      // FASE 3: Jato F-39 Gripen NG (FAB) — interceptação máxima
+      // Pós-combustor azul-branco supersônico + cone de choque
+      const flameLen = 38 + Math.sin(nowT * 0.08) * 9;
+      const jetGrad = ctx.createLinearGradient(-36, 2, -36 - flameLen, 2);
+      jetGrad.addColorStop(0, '#ffffff');
+      jetGrad.addColorStop(0.4, '#38bdf8');
+      jetGrad.addColorStop(1, 'rgba(59, 130, 246, 0)');
+      ctx.fillStyle = jetGrad;
+      ctx.beginPath();
+      ctx.moveTo(-36, -4);
+      ctx.lineTo(-36 - flameLen, 2);
+      ctx.lineTo(-36, 8);
+      ctx.closePath();
+      ctx.fill();
+
+      // Leme furtivo FAB
+      ctx.fillStyle = '#334155';
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(-26, -3);
+      ctx.lineTo(-42, -26);
+      ctx.lineTo(-24, -25);
+      ctx.lineTo(-12, -4);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      ctx.fillStyle = '#22c55e';
+      ctx.fillRect(-36, -21, 9, 3.5);
+      ctx.fillStyle = '#facc15';
+      ctx.fillRect(-34, -17.5, 8, 2.5);
+
+      // Fuselagem delta cinza-furtivo
+      const gripenGrad = ctx.createLinearGradient(0, -12, 0, 12);
+      gripenGrad.addColorStop(0, '#94a3b8');
+      gripenGrad.addColorStop(0.55, '#475569');
+      gripenGrad.addColorStop(1, '#1e293b');
+      ctx.fillStyle = gripenGrad;
+      ctx.beginPath();
+      ctx.moveTo(-36, 3);
+      ctx.lineTo(-26, -8);
+      ctx.lineTo(18, -7);
+      ctx.lineTo(48, 1);
+      ctx.lineTo(16, 9);
+      ctx.lineTo(-36, 7);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Canards dianteiros característicos do Gripen
+      ctx.fillStyle = '#64748b';
+      ctx.beginPath();
+      ctx.moveTo(14, 0);
+      ctx.lineTo(6, -12);
+      ctx.lineTo(16, -10);
+      ctx.lineTo(24, 0);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Asa em delta
+      ctx.fillStyle = '#334155';
+      ctx.beginPath();
+      ctx.moveTo(-26, 4);
+      ctx.lineTo(-22, 19);
+      ctx.lineTo(10, 4);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Canopy dourada furtiva
+      ctx.fillStyle = 'rgba(250, 204, 21, 0.72)';
+      ctx.beginPath();
+      ctx.ellipse(16, -6.5, 11, 4.5, 0, Math.PI, 0);
+      ctx.fill();
+      ctx.stroke();
+    }
+
+    // Etiqueta discreta da aeronave FAB
+    ctx.rotate(-pitch);
+    ctx.font = '900 9px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = stage === 3 ? '#38bdf8' : stage === 2 ? '#fbbf24' : '#a3e635';
+    const fabLabel = stage === 3 ? 'FAB • F-39 GRIPEN' : stage === 2 ? 'FAB • CAÇA F-5M' : 'FAB • TUCANO';
+    ctx.fillText(fabLabel, 0, 29);
   }
   ctx.restore();
 }

@@ -1,7 +1,6 @@
 const CACHE_NAME = 'op24h-pwa-v1';
 const CORE_ASSETS = [
   './',
-  './index.html',
   './css/styles.css',
   './manifest.webmanifest',
   './assets/icon-192.png',
@@ -59,11 +58,26 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return;
   if (url.pathname.startsWith('/ws')) return;
 
-  // Sempre busca na rede sem cache HTTP (cache: 'no-store') para entregar atualizações na hora;
-  // usa o cache do SW apenas como fallback offline.
+  // Navegação de documento: usa req.url (nunca passar RequestInit junto com req.mode === 'navigate')
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req.url, { cache: 'no-store' })
+        .then((res) => {
+          if (res && res.ok) {
+            const clone = res.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put('./', clone)).catch(() => {});
+          }
+          return res;
+        })
+        .catch(() => caches.match('./'))
+    );
+    return;
+  }
+
+  // Demais assets locais: rede primeiro sem cache HTTP para código, fallback offline no cache
   const isMedia = /\.(mp3|wav|ogg|png|jpg|jpeg|webp|ico)$/i.test(url.pathname);
   event.respondWith(
-    fetch(req, { cache: isMedia ? 'default' : 'no-store' })
+    fetch(req.url, { cache: isMedia ? 'default' : 'no-store' })
       .then((res) => {
         if (res && res.status === 200 && res.type === 'basic') {
           const clone = res.clone();

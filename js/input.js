@@ -324,7 +324,7 @@ export function initInputListeners() {
   }
 
   let orientBannerDismissed = false;
-  let deferredInstallPrompt = null;
+  let deferredInstallPrompt = window.__deferredPwaPrompt || null;
   const isIosDevice = /iPhone|iPad|iPod/i.test(navigator.userAgent || '');
 
   function isPwaStandalone() {
@@ -391,11 +391,13 @@ export function initInputListeners() {
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredInstallPrompt = e;
+    window.__deferredPwaPrompt = e;
     syncMobileOrientBanner();
   });
 
   window.addEventListener('appinstalled', () => {
     deferredInstallPrompt = null;
+    window.__deferredPwaPrompt = null;
     finishInstallProgress();
     syncMobileOrientBanner();
   });

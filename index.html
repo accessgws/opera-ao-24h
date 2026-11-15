@@ -9,6 +9,13 @@
   <meta name="apple-mobile-web-app-title" content="Operação 24h" />
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="apple-touch-icon" href="./assets/icon-192.png" />
+  <script>
+    window.__deferredPwaPrompt = null;
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      window.__deferredPwaPrompt = e;
+    });
+  </script>
   <title>Operação 24h: Voo da Fuga</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>

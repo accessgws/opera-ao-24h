@@ -19,7 +19,19 @@ export default {
       return stub.fetch(request);
     }
 
-    return env.ASSETS.fetch(request);
+    const assetRes = await env.ASSETS.fetch(request);
+    if (url.pathname === '/manifest.webmanifest' && assetRes.ok) {
+      const headers = new Headers(assetRes.headers);
+      headers.set('Content-Type', 'application/manifest+json; charset=utf-8');
+      return new Response(assetRes.body, { status: assetRes.status, headers });
+    }
+    if (url.pathname === '/sw.js' && assetRes.ok) {
+      const headers = new Headers(assetRes.headers);
+      headers.set('Content-Type', 'application/javascript; charset=utf-8');
+      headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+      return new Response(assetRes.body, { status: assetRes.status, headers });
+    }
+    return assetRes;
   }
 };
 

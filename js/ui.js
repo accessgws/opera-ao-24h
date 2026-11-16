@@ -11,7 +11,8 @@ import { drawStar } from './render/utils.js';
 import { spawnExplosion } from './render/world.js';
 import { state, missionsState, upgrades, player, triggerHaptic } from './state.js';
 import { getAvailableUpgradeCount, saveProgressState, getTurboDuration, getCoffeeFreezeDuration } from './storage.js';
-import { sendMpCrash, updateMultiplayerGameOverUI } from './multiplayer.js';
+import { mpState, sendMpCrash, updateMultiplayerGameOverUI } from './multiplayer.js';
+import { monetization, syncGameOverAdUI } from './monetization.js';
 
 export function syncTouchModeUI() {
   const isSplit = state.touchControlMode === 'split';
@@ -632,6 +633,8 @@ export function finalizeGameOver() {
   if (dom.hudMpPill) dom.hudMpPill.classList.add('hidden');
   dom.hudLeftSpacer.classList.remove('hidden');
   updateMultiplayerGameOverUI();
+  syncGameOverAdUI(mpState.inMatch && mpState.connected);
+  monetization.vipTrialActive = false;
   dom.gameOverOverlay.classList.remove('hidden');
   syncTouchZoneGuides();
 }

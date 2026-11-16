@@ -215,6 +215,7 @@ canvas {
     padding: 0.7rem 1rem !important;
   }
   #garageCard,
+  #shopCard,
   #multiplayerCard,
   #pauseCard {
     max-width: min(92vw, 560px);

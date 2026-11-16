@@ -9,6 +9,7 @@ import { resizeCanvas, render, syncTouchZoneGuides, handleDuckOrFastFall, pulseT
 import { state } from './state.js';
 import { closeGarage, toggleMutePreference, cycleRoast, generateAndDownloadShareCard, toggleMusicPreference, toggleTouchModePreference, openGarage } from './ui.js';
 import { mpState, openMultiplayer, closeMultiplayer, connectToRoom, leaveRoom, requestMpStartMatch, sendMpSkin, sendMpMode, generateRoomCode, sanitizeRoomCode } from './multiplayer.js';
+import { openShop, closeShop, triggerAdRevive, triggerAdDoubleStars, triggerShopAdStars, triggerShopAdVipTrial, confirmSandboxPurchase, cancelSandboxPurchase } from './monetization.js';
 
 export function initInputListeners() {
   const handleRestartAction = () => {
@@ -115,6 +116,14 @@ export function initInputListeners() {
       if (e.code === 'Escape') {
         e.preventDefault();
         closeMultiplayer();
+      }
+      return;
+    }
+
+    if (dom.shopOverlay && !dom.shopOverlay.classList.contains('hidden')) {
+      if (e.code === 'Escape') {
+        e.preventDefault();
+        closeShop();
       }
       return;
     }
@@ -609,6 +618,68 @@ export function initInputListeners() {
     dom.btnGameOverMpRoom.addEventListener('click', (e) => {
       e.stopPropagation();
       openMultiplayer();
+    });
+  }
+
+  if (dom.btnOpenShop) {
+    dom.btnOpenShop.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openShop();
+    });
+  }
+
+  if (dom.btnCloseShop) {
+    dom.btnCloseShop.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeShop();
+    });
+  }
+
+  if (dom.shopOverlay) {
+    dom.shopOverlay.addEventListener('click', (e) => {
+      if (e.target === dom.shopOverlay) closeShop();
+    });
+  }
+
+  if (dom.btnShopAdStars) {
+    dom.btnShopAdStars.addEventListener('click', (e) => {
+      e.stopPropagation();
+      triggerShopAdStars();
+    });
+  }
+
+  if (dom.btnShopAdVipTrial) {
+    dom.btnShopAdVipTrial.addEventListener('click', (e) => {
+      e.stopPropagation();
+      triggerShopAdVipTrial();
+    });
+  }
+
+  if (dom.btnConfirmSandboxBuy) {
+    dom.btnConfirmSandboxBuy.addEventListener('click', (e) => {
+      e.stopPropagation();
+      confirmSandboxPurchase();
+    });
+  }
+
+  if (dom.btnCancelSandboxBuy) {
+    dom.btnCancelSandboxBuy.addEventListener('click', (e) => {
+      e.stopPropagation();
+      cancelSandboxPurchase();
+    });
+  }
+
+  if (dom.btnAdRevive) {
+    dom.btnAdRevive.addEventListener('click', (e) => {
+      e.stopPropagation();
+      triggerAdRevive();
+    });
+  }
+
+  if (dom.btnAdDoubleStars) {
+    dom.btnAdDoubleStars.addEventListener('click', (e) => {
+      e.stopPropagation();
+      triggerAdDoubleStars();
     });
   }
 }

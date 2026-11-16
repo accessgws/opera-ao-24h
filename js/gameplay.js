@@ -12,6 +12,7 @@ import { state, player, triggerHaptic, upgrades, saySpeech, adjustPursuerGap } f
 import { saveProgressState, rollCompletedMissions, resetPerRunMissions, getShieldPostInvuln, getMagnetRadius, getCoffeeFreezeDuration, getTurboDuration, getVehicleSpeedMultiplier } from './storage.js';
 import { closeGarage, syncProgressUI, syncActHUD, updateHUD, showActBanner, showControlHintForAct, finalizeGameOver, trackMissionProgress, addRunStars, triggerGameOver, registerComboHit } from './ui.js';
 import { mpState, nextRand, seedMatchPrng, sendMpTick, updateMultiplayerHUD, registerMatchStartHandler } from './multiplayer.js';
+import { hasVipFleetActive, resetRunMonetizationFlags, registerReviveHandler, monetization } from './monetization.js';
 
 export function resizeCanvas() {
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -175,6 +176,7 @@ export function startGame(fromMultiplayer = false) {
   closeGarage();
   rollCompletedMissions();
   resetPerRunMissions();
+  resetRunMonetizationFlags();
 
   if (fromMultiplayer) {
     mpState.inMatch = true;
@@ -725,7 +727,8 @@ export function update(dt) {
   // -----------------------------------------------------------------------
   // PROGRESSÃO DE DISTÂNCIA, PONTOS, COMBO E RELÓGIO DE 24H
   // -----------------------------------------------------------------------
-  const fleetMult = getVehicleSpeedMultiplier();
+  const baseFleetMult = getVehicleSpeedMultiplier();
+  const fleetMult = hasVipFleetActive() ? Math.max(baseFleetMult, 1.38 + ([0, 0.06, 0.12, 0.20][upgrades.turboBoost] || 0)) : baseFleetMult;
   if (state.currentAct === 1) {
     const act1Progress = Math.min(1, state.distanceMeters / ACT2_DISTANCE);
     state.currentSpeed = (345 + act1Progress * 85) * (1 + (fleetMult - 1) * 0.45);
@@ -815,7 +818,7 @@ export function update(dt) {
       saySpeech('Agora é jato supersônico!!', 2.4);
     }
 
-    const playerFlightMult = getVehicleSpeedMultiplier()
+    const playerFlightMult = fleetMult
       * (player.turboTimer > 0 ? 1.45 : 1.0)
       * (state.tailwindTimer > 0 ? 1.22 : 1.0);
     const fabTargetMult = state.endlessFlightSeconds >= 50 ? 1.38 : state.endlessFlightSeconds >= 22 ? 1.14 : 0.96;
@@ -1521,7 +1524,34 @@ export function render() {
   ctx.restore();
 }
 
+export function revivePlayerFromAd() {
+  if (state.gameState !== 'GAMEOVER') return;
+  state.gameState = 'PLAYING';
+  state.isPaused = false;
+  state.isHoldingAction = false;
+  state.obstacles = [];
+  state.screenShake = 0;
+  state.sirenFlashTimer = 0;
+  player.hasShield = true;
+  player.invulnTimer = 2.4;
+  player.vy = 0;
+  if (state.currentAct < 3) {
+    state.clockHours = Math.max(state.clockHours, 6.0);
+  }
+  state.pursuerGap = Math.max(state.pursuerGap, 68);
+  state.pursuerVisualGap = state.pursuerGap;
+
+  if (dom.gameOverOverlay) dom.gameOverOverlay.classList.add('hidden');
+  if (dom.btnPause) dom.btnPause.classList.remove('hidden');
+  syncActHUD(state.currentAct);
+  updateHUD();
+  syncTouchZoneGuides();
+  audio.startMusic(state.currentAct);
+  addFloatingText(player.x + 20, player.y - 60, 'Segunda Chance! +Escudo', '#34d399');
+}
+
 registerMatchStartHandler(() => startGame(true));
+registerReviveHandler(revivePlayerFromAd);
 
 export function gameLoop(timestamp) {
   if (state.lastTimestamp === 0) state.lastTimestamp = timestamp;

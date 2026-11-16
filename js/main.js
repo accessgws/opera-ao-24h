@@ -11,6 +11,7 @@ import { state, initClouds, initNightStars } from './state.js';
 import { loadSettings, loadProgressState } from './storage.js';
 import { syncTouchModeUI, syncProgressUI } from './ui.js';
 import { initMultiplayerFromUrl } from './multiplayer.js';
+import { loadMonetizationState } from './monetization.js';
 
 function bootstrapApp() {
   initCanvasPolyfills();
@@ -20,6 +21,7 @@ function bootstrapApp() {
     audio.setMuted(true);
   }
   loadProgressState();
+  loadMonetizationState();
   syncTouchModeUI();
   syncProgressUI();
 

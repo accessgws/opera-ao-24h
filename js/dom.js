@@ -124,6 +124,7 @@ export const dom = {
   btnCloseGarage: document.getElementById('btnCloseGarage'),
   garageMissionsList: document.getElementById('garageMissionsList'),
   garageUpgradesList: document.getElementById('garageUpgradesList'),
+  garageConsumablesList: document.getElementById('garageConsumablesList'),
   hudMpPill: document.getElementById('hudMpPill'),
   hudMpStatus: document.getElementById('hudMpStatus'),
   btnOpenMultiplayer: document.getElementById('btnOpenMultiplayer'),

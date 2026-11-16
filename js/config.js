@@ -18,6 +18,32 @@ export const STORAGE_UPGRADES_KEY = 'operacao_24h_voo_fuga_upgrades_v1';
 
 export const STORAGE_MISSIONS_KEY = 'operacao_24h_voo_fuga_missions_v1';
 
+export const STORAGE_CONSUMABLES_KEY = 'operacao_24h_voo_fuga_consumables_v1';
+
+export const CONSUMABLE_DEFS = [
+  {
+    id: 'headstart',
+    icon: '🔥',
+    title: 'Arrancada Turbo',
+    desc: 'Começa a próxima corrida avançando +250m com Turbo inicial.',
+    cost: 15
+  },
+  {
+    id: 'bribeClock',
+    icon: '🧊',
+    title: 'Suborno no Relógio',
+    desc: 'Congela o prazo de 24h nos primeiros 12s da próxima corrida.',
+    cost: 15
+  },
+  {
+    id: 'extraShield',
+    icon: '🛡️',
+    title: 'Maleta Blindada',
+    desc: 'Garante um Escudo de Imunidade ativo na largada.',
+    cost: 20
+  }
+];
+
 export const UPGRADE_DEFS = [
   {
     id: 'magnet',

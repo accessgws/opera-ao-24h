@@ -3,13 +3,13 @@
 // =============================================================================
 
 import { audio } from './audio.js';
-import { UPGRADE_DEFS, IS_COARSE_POINTER, ACT3_DISTANCE, STORAGE_KEY, STORAGE_MUSIC_KEY, STORAGE_TOUCH_MODE_KEY, STORAGE_MUTE_KEY } from './config.js';
+import { UPGRADE_DEFS, CONSUMABLE_DEFS, IS_COARSE_POINTER, ACT3_DISTANCE, STORAGE_KEY, STORAGE_MUSIC_KEY, STORAGE_TOUCH_MODE_KEY, STORAGE_MUTE_KEY } from './config.js';
 import { dom } from './dom.js';
 import { syncTouchZoneGuides } from './gameplay.js';
 import { drawCaricatureHeadOn } from './render/player.js';
 import { drawStar } from './render/utils.js';
 import { spawnExplosion } from './render/world.js';
-import { state, missionsState, upgrades, player, triggerHaptic } from './state.js';
+import { state, missionsState, upgrades, consumables, player, triggerHaptic } from './state.js';
 import { getAvailableUpgradeCount, saveProgressState, getTurboDuration, getCoffeeFreezeDuration } from './storage.js';
 import { mpState, sendMpCrash, updateMultiplayerGameOverUI } from './multiplayer.js';
 import { monetization, syncGameOverAdUI } from './monetization.js';
@@ -233,6 +233,67 @@ export function renderGarage() {
       dom.garageUpgradesList.appendChild(buildUpgradeCard(def));
     }
   }
+  if (dom.garageConsumablesList) {
+    dom.garageConsumablesList.textContent = '';
+    for (const def of CONSUMABLE_DEFS) {
+      dom.garageConsumablesList.appendChild(buildConsumableCard(def));
+    }
+  }
+}
+
+export function buildConsumableCard(def) {
+  const active = Boolean(consumables[def.id]);
+  const canAfford = !active && state.totalStars >= def.cost;
+  const card = document.createElement('div');
+  card.className = active
+    ? 'rounded-2xl bg-sky-500/15 border border-sky-400/50 p-2.5 flex flex-col justify-between gap-2'
+    : 'rounded-2xl bg-white/5 border border-white/10 p-2.5 flex flex-col justify-between gap-2';
+
+  const top = document.createElement('div');
+  top.className = 'flex items-center gap-2';
+  const icon = document.createElement('span');
+  icon.className = 'text-base shrink-0';
+  icon.textContent = def.icon;
+  const title = document.createElement('p');
+  title.className = 'text-xs font-extrabold text-white leading-tight';
+  title.textContent = def.title;
+  top.appendChild(icon);
+  top.appendChild(title);
+
+  const desc = document.createElement('p');
+  desc.className = 'text-[10px] text-slate-300 leading-snug';
+  desc.textContent = def.desc;
+
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.disabled = active || !canAfford;
+  btn.className = active
+    ? 'w-full rounded-xl bg-sky-500/25 border border-sky-400/50 py-1.5 px-2 text-[10px] font-black uppercase text-sky-200 cursor-default'
+    : canAfford
+      ? 'w-full rounded-xl bg-sky-500 hover:bg-sky-400 py-1.5 px-2 text-[10px] font-black uppercase text-white cursor-pointer transition'
+      : 'w-full rounded-xl bg-white/5 border border-white/10 py-1.5 px-2 text-[10px] font-black uppercase text-slate-500 cursor-not-allowed';
+  btn.textContent = active ? '✓ Equipado p/ próxima' : `Equipar • ${def.cost} ★`;
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    purchaseConsumable(def.id);
+  });
+
+  card.appendChild(top);
+  card.appendChild(desc);
+  card.appendChild(btn);
+  return card;
+}
+
+export function purchaseConsumable(id) {
+  const def = CONSUMABLE_DEFS.find((d) => d.id === id);
+  if (!def || consumables[id]) return;
+  if (state.totalStars < def.cost) return;
+  audio.init();
+  state.totalStars -= def.cost;
+  consumables[id] = true;
+  audio.playPowerupActivate();
+  saveProgressState();
+  renderGarage();
 }
 
 export function purchaseUpgrade(id) {

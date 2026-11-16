@@ -8,7 +8,7 @@ import { canvas, dom, ctx } from './dom.js';
 import { drawTransitionProps, drawRemoteRivals, drawPlayer, drawImpactComedyEffects } from './render/player.js';
 import { drawPursuer } from './render/pursuers.js';
 import { spawnExplosion, addFloatingText, spawnDust, drawBackground, drawCollectibles, drawObstacles, drawParticlesAndEffects } from './render/world.js';
-import { state, player, triggerHaptic, upgrades, saySpeech, adjustPursuerGap } from './state.js';
+import { state, player, triggerHaptic, upgrades, consumables, saySpeech, adjustPursuerGap } from './state.js';
 import { saveProgressState, rollCompletedMissions, resetPerRunMissions, getShieldPostInvuln, getMagnetRadius, getCoffeeFreezeDuration, getTurboDuration, getVehicleSpeedMultiplier } from './storage.js';
 import { closeGarage, syncProgressUI, syncActHUD, updateHUD, showActBanner, showControlHintForAct, finalizeGameOver, trackMissionProgress, addRunStars, triggerGameOver, registerComboHit } from './ui.js';
 import { mpState, nextRand, seedMatchPrng, sendMpTick, updateMultiplayerHUD, registerMatchStartHandler } from './multiplayer.js';
@@ -250,6 +250,29 @@ export function startGame(fromMultiplayer = false) {
   player.hasShield = upgrades.startShield >= 1;
   player.turboTimer = 0;
   player.invulnTimer = 0;
+
+  if (!fromMultiplayer) {
+    let usedConsumable = false;
+    if (consumables.headstart) {
+      consumables.headstart = false;
+      state.distanceMeters += 250;
+      player.turboTimer = Math.max(player.turboTimer, 4.0);
+      usedConsumable = true;
+    }
+    if (consumables.bribeClock) {
+      consumables.bribeClock = false;
+      state.clockFreezeTimer = Math.max(state.clockFreezeTimer, 12.0);
+      usedConsumable = true;
+    }
+    if (consumables.extraShield) {
+      consumables.extraShield = false;
+      player.hasShield = true;
+      usedConsumable = true;
+    }
+    if (usedConsumable) {
+      saveProgressState();
+    }
+  }
 
   state.obstacles = [];
   state.collectibles = [];

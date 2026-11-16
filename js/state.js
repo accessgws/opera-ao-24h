@@ -89,6 +89,7 @@ export const state = {
 };
 
 export const upgrades = { magnet: 0, startShield: 0, coffeeBoost: 0, turboBoost: 0, vehicleTier: 0 };
+export const consumables = { headstart: false, bribeClock: false, extraShield: false };
 export const missionsState = { completedCount: 0, slots: [] };
 
 export const player = {

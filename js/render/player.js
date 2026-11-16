@@ -6,7 +6,7 @@
 import { ctx } from '../dom.js';
 import { getPlayerHitbox } from '../gameplay.js';
 import { getTimeOfDayState, drawStar } from './utils.js';
-import { state, player } from '../state.js';
+import { state, player, upgrades } from '../state.js';
 import { mpState } from '../multiplayer.js';
 
 let activeRivalOverride = null;
@@ -1312,6 +1312,45 @@ export function drawExecutiveCar(x, groundFootY, pitch, wheelAngle, withDriver) 
   ctx.roundRect(-62, -15, 6, 7, 2);
   ctx.fill();
 
+  // Evolução visual do Carro por nível de Frota (vehicleTier)
+  const carTier = activeRivalOverride ? 0 : (upgrades.vehicleTier || 0);
+  if (carTier >= 1) {
+    // Aerofólio traseiro esportivo
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.moveTo(-54, -22);
+    ctx.lineTo(-65, -34);
+    ctx.lineTo(-47, -32);
+    ctx.lineTo(-46, -22);
+    ctx.closePath();
+    ctx.fill();
+  }
+  if (carTier >= 2) {
+    // Barra tática LED no teto + quebra-mato dianteiro
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillRect(-14, -42, 24, 4);
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    ctx.moveTo(60, -16);
+    ctx.lineTo(65, -14);
+    ctx.lineTo(65, -2);
+    ctx.stroke();
+  }
+  if (carTier >= 3) {
+    // Bandeirinhas presidenciais no capô
+    ctx.strokeStyle = '#fde047';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.moveTo(42, -20);
+    ctx.lineTo(42, -32);
+    ctx.stroke();
+    ctx.fillStyle = '#16a34a';
+    ctx.fillRect(42, -32, 9, 6);
+    ctx.fillStyle = '#facc15';
+    ctx.fillRect(44, -30, 5, 2.5);
+  }
+
   // Rodas esportivas blindadas (compensando suspensão para colarem no chão)
   for (const wx of [-36, 36]) {
     ctx.save();
@@ -1518,6 +1557,39 @@ export function drawExecutiveJet(x, y, pitch, propAngle, waveAngle, withPilot) {
   ctx.beginPath();
   ctx.arc(-18, 24, 3, 0, Math.PI * 2);
   ctx.fill();
+
+  // Evolução visual do Avião por nível de Frota (vehicleTier)
+  const jetTier = activeRivalOverride ? 0 : (upgrades.vehicleTier || 0);
+  if (jetTier >= 1) {
+    // Winglet esportivo na ponta da asa
+    ctx.fillStyle = '#facc15';
+    ctx.beginPath();
+    ctx.moveTo(-24, 25);
+    ctx.lineTo(-27, 32);
+    ctx.lineTo(-15, 25);
+    ctx.closePath();
+    ctx.fill();
+  }
+  if (jetTier >= 2) {
+    // Canards furtivos dianteiros
+    ctx.fillStyle = '#38bdf8';
+    ctx.beginPath();
+    ctx.moveTo(22, -2);
+    ctx.lineTo(14, -14);
+    ctx.lineTo(28, -4);
+    ctx.closePath();
+    ctx.fill();
+  }
+  if (jetTier >= 3) {
+    // Turbina extra presidencial no dorso
+    ctx.fillStyle = '#ca8a04';
+    ctx.strokeStyle = '#0f172a';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    ctx.roundRect(-22, -19, 26, 7, 3);
+    ctx.fill();
+    ctx.stroke();
+  }
 
   // Nariz vermelho e hélice
   ctx.fillStyle = '#dc2626';

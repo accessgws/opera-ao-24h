@@ -2,8 +2,8 @@
 // PERSISTÊNCIA (LOCALSTORAGE), MISSÕES E GARAGEM DE UPGRADES
 // =============================================================================
 
-import { STORAGE_KEY, STORAGE_MUSIC_KEY, STORAGE_MUTE_KEY, STORAGE_TOUCH_MODE_KEY, MISSION_TEMPLATES, STORAGE_STARS_KEY, STORAGE_UPGRADES_KEY, UPGRADE_DEFS, STORAGE_MISSIONS_KEY } from './config.js';
-import { state, upgrades, missionsState } from './state.js';
+import { STORAGE_KEY, STORAGE_MUSIC_KEY, STORAGE_MUTE_KEY, STORAGE_TOUCH_MODE_KEY, MISSION_TEMPLATES, STORAGE_STARS_KEY, STORAGE_UPGRADES_KEY, UPGRADE_DEFS, STORAGE_MISSIONS_KEY, STORAGE_CONSUMABLES_KEY, CONSUMABLE_DEFS } from './config.js';
+import { state, upgrades, consumables, missionsState } from './state.js';
 
 export function loadSettings() {
   state.highScore = 0;
@@ -69,6 +69,14 @@ export function loadProgressState() {
       }
     }
 
+    const rawConsumables = localStorage.getItem(STORAGE_CONSUMABLES_KEY);
+    if (rawConsumables) {
+      const parsedC = JSON.parse(rawConsumables);
+      for (const def of CONSUMABLE_DEFS) {
+        consumables[def.id] = Boolean(parsedC && parsedC[def.id]);
+      }
+    }
+
     const rawMissions = localStorage.getItem(STORAGE_MISSIONS_KEY);
     if (rawMissions) {
       const parsedM = JSON.parse(rawMissions);
@@ -101,6 +109,7 @@ export function saveProgressState() {
   try {
     localStorage.setItem(STORAGE_STARS_KEY, String(Math.max(0, Math.floor(state.totalStars))));
     localStorage.setItem(STORAGE_UPGRADES_KEY, JSON.stringify(upgrades));
+    localStorage.setItem(STORAGE_CONSUMABLES_KEY, JSON.stringify(consumables));
     localStorage.setItem(STORAGE_MISSIONS_KEY, JSON.stringify(missionsState));
   } catch (e) {}
 }

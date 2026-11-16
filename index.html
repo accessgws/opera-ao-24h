@@ -99,7 +99,7 @@
 
       <!-- Chip de Duelo Multijogador -->
       <div id="hudMpPill" class="hidden frosted-pill rounded-2xl px-2 py-1 sm:px-2.5 sm:py-1.5 border-indigo-400/50 flex items-center gap-1">
-        <span class="text-[10px] sm:text-xs leading-none">👥</span>
+        <svg class="w-3.5 h-3.5 text-indigo-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         <span id="hudMpStatus" class="text-[10px] sm:text-xs font-black text-indigo-200 tabular-nums leading-none">1º • 0m</span>
       </div>
     </div>
@@ -351,7 +351,8 @@
             </div>
             <button id="btnOpenGarage" type="button"
               class="col-span-7 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/45 py-1.5 px-2.5 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-emerald-200 cursor-pointer transition flex items-center justify-center gap-1.5 truncate">
-              <span>🛠️ Garagem & Missões</span>
+              <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              <span>Garagem &amp; Missões</span>
               <span id="garageBadge" class="hidden rounded-full bg-amber-400 text-slate-950 px-1.5 py-0.5 text-[9px] font-black leading-none">1</span>
             </button>
           </div>
@@ -359,11 +360,11 @@
           <!-- Controles Rápidos: Música + Modo Touch -->
           <div class="grid grid-cols-2 gap-1.5">
             <button id="btnStartMusic" type="button"
-              class="rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/35 py-1.5 px-2.5 text-[10px] sm:text-[11px] font-bold text-amber-200 cursor-pointer transition truncate">
+              class="rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/35 py-1.5 px-2.5 text-[10px] sm:text-[11px] font-bold text-amber-200 cursor-pointer transition truncate flex items-center justify-center gap-1">
               <span id="btnStartMusicText">🎵 Música: Ligada</span>
             </button>
             <button id="btnTouchMode" type="button"
-              class="rounded-xl bg-white/5 hover:bg-white/15 border border-white/15 py-1.5 px-2.5 text-[10px] sm:text-[11px] font-bold text-sky-200 cursor-pointer transition truncate">
+              class="rounded-xl bg-white/5 hover:bg-white/15 border border-white/15 py-1.5 px-2.5 text-[10px] sm:text-[11px] font-bold text-sky-200 cursor-pointer transition truncate flex items-center justify-center gap-1">
               <span id="btnTouchModeText">👆 Toque: Dividido</span>
             </button>
           </div>
@@ -371,15 +372,16 @@
           <!-- Botão Principal + Multijogador -->
           <div class="grid grid-cols-12 gap-1.5">
             <button id="btnStart" type="button"
-              class="col-span-7 rounded-2xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 py-3 sm:py-3.5 px-3 text-white font-black text-xs sm:text-base tracking-wide uppercase shadow-lg shadow-sky-500/30 active:scale-[0.98] transition flex items-center justify-center gap-2 cursor-pointer">
+              class="col-span-7 min-h-[44px] rounded-2xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 py-3 sm:py-3.5 px-3 text-white font-black text-xs sm:text-base tracking-wide uppercase shadow-lg shadow-sky-500/30 active:scale-[0.98] transition flex items-center justify-center gap-2 cursor-pointer">
               <svg class="w-4 h-4 sm:w-5 sm:h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor">
                 <polygon points="5 3 19 12 5 21 5 3"/>
               </svg>
               <span>Iniciar Fuga</span>
             </button>
             <button id="btnOpenMultiplayer" type="button"
-              class="col-span-5 rounded-2xl bg-indigo-500/25 hover:bg-indigo-500/35 border border-indigo-400/55 py-3 sm:py-3.5 px-2.5 text-indigo-100 font-black text-[11px] sm:text-xs tracking-wide uppercase shadow-lg shadow-indigo-500/15 active:scale-[0.98] transition flex items-center justify-center gap-1.5 cursor-pointer truncate">
-              <span>👥 Duelo</span>
+              class="col-span-5 min-h-[44px] rounded-2xl bg-indigo-500/25 hover:bg-indigo-500/35 border border-indigo-400/55 py-3 sm:py-3.5 px-2.5 text-indigo-100 font-black text-[11px] sm:text-xs tracking-wide uppercase shadow-lg shadow-indigo-500/15 active:scale-[0.98] transition flex items-center justify-center gap-1.5 cursor-pointer truncate">
+              <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span>Duelo</span>
             </button>
           </div>
         </div>
@@ -389,14 +391,14 @@
     <!-- Aviso Mobile: Girar Tela, Tela Cheia e Instalar App (PWA) -->
     <div id="mobileOrientBanner" class="hidden fixed left-1/2 -translate-x-1/2 bottom-2.5 z-40 max-w-[95vw]">
       <div class="frosted-pill rounded-2xl px-2.5 py-1.5 border-sky-400/45 bg-slate-900/90 flex flex-wrap items-center justify-center gap-1.5 shadow-xl">
-        <span id="mobileOrientText" class="text-[11px] font-extrabold text-sky-100 whitespace-nowrap">📱 Gire a tela e ative Tela Cheia</span>
+        <span id="mobileOrientText" class="text-[11px] font-extrabold text-sky-100 whitespace-nowrap">Gire a tela e ative Tela Cheia</span>
         <button id="btnBannerFullscreen" type="button"
           class="rounded-xl bg-sky-500 hover:bg-sky-400 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white shrink-0 cursor-pointer transition">
           Tela Cheia
         </button>
         <button id="btnInstallPwa" type="button"
           class="hidden rounded-xl bg-emerald-500 hover:bg-emerald-400 px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-white shrink-0 cursor-pointer transition">
-          📲 Instalar App
+          Instalar App
         </button>
         <button id="btnDismissOrientBanner" type="button" aria-label="Fechar aviso"
           class="rounded-lg bg-white/10 hover:bg-white/20 px-1.5 py-0.5 text-[10px] font-black text-slate-300 shrink-0 cursor-pointer">
@@ -496,7 +498,8 @@
 
       <!-- Selo Novo Recorde -->
       <div id="newRecordBadge" class="hidden inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/60 px-3 py-0.5 mb-2 animate-bounce">
-        <span class="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-emerald-300">🏆 Novo Recorde Pessoal!</span>
+        <svg class="w-3.5 h-3.5 text-emerald-300 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+        <span class="text-[10px] sm:text-[11px] font-black uppercase tracking-widest text-emerald-300">Novo Recorde Pessoal!</span>
       </div>
 
       <h2 id="gameOverTitle" class="text-xl sm:text-3xl font-black text-white tracking-tight mb-1">Fim da Operação!</h2>
@@ -575,12 +578,13 @@
       <!-- Botões de Anúncio Recompensado (Reviver / 2x Estrelas) -->
       <div id="gameOverAdRow" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2.5">
         <button id="btnAdRevive" type="button"
-          class="rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 py-2.5 px-3 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 active:scale-[0.98] transition cursor-pointer">
-          📺 Reviver (+Escudo)
+          class="min-h-[42px] rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 py-2.5 px-3 text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 active:scale-[0.98] transition cursor-pointer flex items-center justify-center gap-1.5">
+          <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/></svg>
+          <span>Reviver (+Escudo)</span>
         </button>
         <button id="btnAdDoubleStars" type="button"
-          class="rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 py-2.5 px-3 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 active:scale-[0.98] transition cursor-pointer">
-          📺 2x Estrelas
+          class="min-h-[42px] rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 py-2.5 px-3 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 active:scale-[0.98] transition cursor-pointer flex items-center justify-center gap-1.5">
+          <span>2x Estrelas</span>
         </button>
       </div>
 
@@ -622,7 +626,8 @@
         <div class="grid grid-cols-2 gap-2">
           <button id="btnGameOverGarage" type="button"
             class="rounded-2xl bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/35 py-2 px-3 text-sky-200 font-bold text-xs uppercase tracking-wider cursor-pointer transition flex items-center justify-center gap-1.5">
-            <span>🛠️ Garagem</span>
+            <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+            <span>Garagem</span>
             <span id="gameOverGarageBadge" class="hidden rounded-full bg-amber-400 text-slate-950 px-1.5 py-0.5 text-[9px] font-black leading-none">1</span>
           </button>
           <button id="btnGameOverMenu" type="button"
@@ -644,8 +649,9 @@
         </div>
         <div class="flex items-center gap-2 shrink-0">
           <button id="btnOpenShop" type="button"
-            class="rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 px-3 py-1.5 text-xs font-black uppercase tracking-wider text-slate-950 shadow cursor-pointer transition">
-            💎 Loja
+            class="rounded-2xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 px-3 py-1.5 text-xs font-black uppercase tracking-wider text-slate-950 shadow cursor-pointer transition flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg>
+            <span>Loja</span>
           </button>
           <div class="rounded-2xl bg-amber-500/15 border border-amber-400/40 px-3 py-1.5 flex items-center gap-1.5">
             <span class="text-xs sm:text-sm text-amber-300">★</span>
@@ -711,8 +717,9 @@
       <!-- Criar / Entrar na Sala -->
       <div id="mpConnectPanel" class="space-y-2.5">
         <button id="btnMpCreateRoom" type="button"
-          class="w-full rounded-2xl bg-gradient-to-r from-indigo-500 to-sky-500 hover:from-indigo-400 hover:to-sky-400 py-2.5 px-4 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-indigo-500/25 cursor-pointer transition">
-          ➕ Criar Nova Sala
+          class="w-full min-h-[42px] rounded-2xl bg-gradient-to-r from-indigo-500 to-sky-500 hover:from-indigo-400 hover:to-sky-400 py-2.5 px-4 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-indigo-500/25 cursor-pointer transition flex items-center justify-center gap-1.5">
+          <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>Criar Nova Sala</span>
         </button>
 
         <div class="flex items-center gap-2">
@@ -758,8 +765,8 @@
         </p>
 
         <button id="btnMpStartMatch" type="button"
-          class="w-full rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 disabled:opacity-50 py-3 px-4 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-emerald-500/25 cursor-pointer transition">
-          🚀 Iniciar Duelo Agora
+          class="w-full min-h-[44px] rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 disabled:opacity-50 py-3 px-4 text-white font-black text-xs sm:text-sm uppercase tracking-wider shadow-lg shadow-emerald-500/25 cursor-pointer transition">
+          Iniciar Duelo Agora
         </button>
       </div>
     </div>
@@ -787,9 +794,14 @@
 
       <!-- Recompensa Diária (7 dias) -->
       <div class="rounded-2xl bg-gradient-to-r from-amber-500/15 to-emerald-500/15 border border-amber-400/40 p-3 mb-4 flex items-center justify-between gap-2">
-        <div class="min-w-0">
-          <p id="shopDailyTitle" class="text-xs font-black text-amber-200">🎁 Bônus Diário (Dia 1/7)</p>
-          <p id="shopDailyDesc" class="text-[10px] text-slate-300">Entre todo dia para ganhar até +120 ★!</p>
+        <div class="flex items-center gap-2.5 min-w-0">
+          <span class="w-8 h-8 rounded-xl bg-amber-400/20 border border-amber-400/40 text-amber-300 flex items-center justify-center shrink-0">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+          </span>
+          <div class="min-w-0">
+            <p id="shopDailyTitle" class="text-xs font-black text-amber-200">Bônus Diário (Dia 1/7)</p>
+            <p id="shopDailyDesc" class="text-[10px] text-slate-300">Entre todo dia para ganhar até +120 ★!</p>
+          </div>
         </div>
         <button id="btnClaimDailyReward" type="button"
           class="rounded-xl bg-amber-400 hover:bg-amber-300 disabled:opacity-50 px-3 py-1.5 text-[11px] font-black uppercase text-slate-950 shrink-0 cursor-pointer transition">
@@ -802,12 +814,12 @@
         <h3 class="text-[11px] font-black uppercase tracking-widest text-emerald-300 mb-2">Ganhe Grátis Vendo Anúncio</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <button id="btnShopAdStars" type="button"
-            class="rounded-2xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/45 py-2.5 px-3 text-xs font-black uppercase tracking-wider text-emerald-100 cursor-pointer transition disabled:opacity-50">
-            📺 Ver Anúncio (+25 ★)
+            class="min-h-[42px] rounded-2xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/45 py-2.5 px-3 text-xs font-black uppercase tracking-wider text-emerald-100 cursor-pointer transition disabled:opacity-50">
+            Ver Anúncio (+25 ★)
           </button>
           <button id="btnShopAdVipTrial" type="button"
-            class="rounded-2xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/45 py-2.5 px-3 text-xs font-black uppercase tracking-wider text-sky-100 cursor-pointer transition disabled:opacity-50">
-            📺 Testar Frota VIP (1 corrida)
+            class="min-h-[42px] rounded-2xl bg-sky-500/20 hover:bg-sky-500/30 border border-sky-400/45 py-2.5 px-3 text-xs font-black uppercase tracking-wider text-sky-100 cursor-pointer transition disabled:opacity-50">
+            Testar Frota VIP (1 corrida)
           </button>
         </div>
       </div>

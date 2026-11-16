@@ -355,11 +355,11 @@ export function initInputListeners() {
     dom.mobileOrientBanner.classList.toggle('hidden', !shouldShow);
     if (shouldShow && dom.mobileOrientText) {
       if (isPortrait) {
-        dom.mobileOrientText.textContent = '📱 Gire a tela e ative Tela Cheia';
+        dom.mobileOrientText.textContent = 'Gire a tela e ative Tela Cheia';
       } else if (canOfferInstall) {
-        dom.mobileOrientText.textContent = '📲 Instale como App no celular';
+        dom.mobileOrientText.textContent = 'Instale como App no celular';
       } else {
-        dom.mobileOrientText.textContent = '⛶ Toque para jogar em Tela Cheia';
+        dom.mobileOrientText.textContent = 'Toque para jogar em Tela Cheia';
       }
     }
     if (dom.btnBannerFullscreen) {
@@ -368,7 +368,7 @@ export function initInputListeners() {
     if (dom.btnInstallPwa) {
       dom.btnInstallPwa.classList.toggle('hidden', !canOfferInstall);
       if (canOfferInstall) {
-        dom.btnInstallPwa.textContent = isIosDevice ? '📲 Instalar (iPhone)' : '📲 Instalar App';
+        dom.btnInstallPwa.textContent = isIosDevice ? 'Instalar (iPhone)' : 'Instalar App';
       }
     }
   }

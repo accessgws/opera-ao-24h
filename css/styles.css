@@ -3,6 +3,10 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+button {
+  touch-action: manipulation;
+}
+
 html, body {
   margin: 0;
   padding: 0;

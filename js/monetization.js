@@ -4,6 +4,7 @@
 // =============================================================================
 
 import { dom } from './dom.js';
+import { getIconSvg } from './icons.js';
 import { state, upgrades } from './state.js';
 import { saveProgressState } from './storage.js';
 import { syncProgressUI } from './ui.js';
@@ -20,7 +21,7 @@ function getTodayKey() {
 export const STORE_PACKS = [
   {
     id: 'pack_stars_150',
-    icon: '⭐',
+    icon: 'star',
     badge: 'Popular',
     title: '150 Estrelas',
     desc: 'Acelere upgrades de Frota, Motor e Blindagem.',
@@ -31,7 +32,7 @@ export const STORE_PACKS = [
   },
   {
     id: 'pack_stars_500',
-    icon: '💰',
+    icon: 'coins',
     badge: 'Melhor Valor',
     title: '500 Estrelas',
     desc: 'Evolua todos os equipamentos e veículos rapidamente.',
@@ -42,7 +43,7 @@ export const STORE_PACKS = [
   },
   {
     id: 'remove_ads',
-    icon: '🚫',
+    icon: 'ban',
     badge: 'Vitalício',
     title: 'Remover Anúncios + 100 ★',
     desc: 'Resgate recompensas instantâneas sem assistir vídeos.',
@@ -54,7 +55,7 @@ export const STORE_PACKS = [
   },
   {
     id: 'vip_pass',
-    icon: '👑',
+    icon: 'crown',
     badge: 'Supremo',
     title: 'Passe VIP Ouro + 300 ★',
     desc: 'Frota máxima desbloqueada + Sem Anúncios + 300 ★.',
@@ -239,26 +240,26 @@ export function renderShopUI() {
     const canClaim = canClaimDailyReward();
     const dayNum = monetization.dailyStreak + 1;
     const reward = DAILY_REWARDS[monetization.dailyStreak] || 15;
-    dom.shopDailyTitle.textContent = `🎁 Bônus Diário (Dia ${dayNum}/7)`;
+    dom.shopDailyTitle.textContent = `Bônus Diário (Dia ${dayNum}/7)`;
     dom.btnClaimDailyReward.disabled = !canClaim;
-    dom.btnClaimDailyReward.textContent = canClaim ? `Resgatar +${reward} ★` : '✓ Resgatado hoje';
+    dom.btnClaimDailyReward.textContent = canClaim ? `Resgatar +${reward} ★` : 'Resgatado hoje';
   }
   if (dom.btnShopAdStars) {
     const waitMs = Math.max(0, GARAGE_AD_COOLDOWN_MS - (Date.now() - monetization.lastGarageAdAt));
     const ready = monetization.removeAds || waitMs <= 0;
     dom.btnShopAdStars.disabled = !ready;
     dom.btnShopAdStars.textContent = ready
-      ? (monetization.removeAds ? '🎁 Resgatar +25 ★' : '📺 Ver Anúncio (+25 ★)')
-      : `⏳ Aguarde ${Math.ceil(waitMs / 1000)}s`;
+      ? (monetization.removeAds ? 'Resgatar +25 ★' : 'Ver Anúncio (+25 ★)')
+      : `Aguarde ${Math.ceil(waitMs / 1000)}s`;
   }
   if (dom.btnShopAdVipTrial) {
     const active = hasVipFleetActive();
     dom.btnShopAdVipTrial.disabled = active;
     dom.btnShopAdVipTrial.textContent = monetization.vipPass
-      ? '👑 VIP Permanente Ativo'
+      ? 'VIP Permanente Ativo'
       : monetization.vipTrialActive
-        ? '✓ VIP Liberado (1 corrida)'
-        : '📺 Testar Frota VIP (1 corrida)';
+        ? 'VIP Liberado (1 corrida)'
+        : 'Testar Frota VIP (1 corrida)';
   }
 
   if (!dom.shopPacksList) return;
@@ -274,7 +275,7 @@ export function renderShopUI() {
     top.className = 'flex items-start justify-between gap-2';
     top.innerHTML = `
       <div class="flex items-center gap-2 min-w-0">
-        <span class="text-lg shrink-0">${pack.icon}</span>
+        <span class="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-400/35 text-amber-300 flex items-center justify-center shrink-0">${getIconSvg(pack.icon, 'w-4 h-4')}</span>
         <div class="min-w-0">
           <p class="text-[9px] font-black uppercase tracking-wider text-amber-300">${pack.badge}</p>
           <p class="text-xs font-extrabold text-white truncate">${pack.title}</p>
@@ -371,7 +372,7 @@ export function syncGameOverAdUI(isMultiplayerMatch) {
     const canDouble = !monetization.doubledStarsThisRun && state.runStars > 0;
     dom.btnAdDoubleStars.classList.toggle('hidden', !canDouble);
     if (canDouble) {
-      dom.btnAdDoubleStars.textContent = `📺 2x Estrelas (+${state.runStars} ★)`;
+      dom.btnAdDoubleStars.textContent = `2x Estrelas (+${state.runStars} ★)`;
     }
   }
 }

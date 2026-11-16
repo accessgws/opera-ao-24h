@@ -5,6 +5,7 @@
 import { audio } from './audio.js';
 import { UPGRADE_DEFS, CONSUMABLE_DEFS, IS_COARSE_POINTER, ACT3_DISTANCE, STORAGE_KEY, STORAGE_MUSIC_KEY, STORAGE_TOUCH_MODE_KEY, STORAGE_MUTE_KEY } from './config.js';
 import { dom } from './dom.js';
+import { getIconSvg } from './icons.js';
 import { syncTouchZoneGuides } from './gameplay.js';
 import { drawCaricatureHeadOn } from './render/player.js';
 import { drawStar } from './render/utils.js';
@@ -147,8 +148,8 @@ export function buildUpgradeCard(def) {
   left.className = 'flex items-center gap-2.5 min-w-0';
 
   const iconBox = document.createElement('div');
-  iconBox.className = 'w-9 h-9 rounded-xl bg-slate-900/80 border border-white/15 flex items-center justify-center text-lg shrink-0';
-  iconBox.textContent = def.icon;
+  iconBox.className = 'w-9 h-9 rounded-xl bg-sky-500/15 border border-sky-400/35 text-sky-300 flex items-center justify-center shrink-0';
+  iconBox.innerHTML = getIconSvg(def.icon, 'w-5 h-5');
 
   const titleWrap = document.createElement('div');
   titleWrap.className = 'min-w-0';
@@ -252,8 +253,8 @@ export function buildConsumableCard(def) {
   const top = document.createElement('div');
   top.className = 'flex items-center gap-2';
   const icon = document.createElement('span');
-  icon.className = 'text-base shrink-0';
-  icon.textContent = def.icon;
+  icon.className = 'w-7 h-7 rounded-lg bg-sky-500/15 border border-sky-400/35 text-sky-300 flex items-center justify-center shrink-0';
+  icon.innerHTML = getIconSvg(def.icon, 'w-4 h-4');
   const title = document.createElement('p');
   title.className = 'text-xs font-extrabold text-white leading-tight';
   title.textContent = def.title;

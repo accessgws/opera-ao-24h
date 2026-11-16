@@ -23,21 +23,21 @@ export const STORAGE_CONSUMABLES_KEY = 'operacao_24h_voo_fuga_consumables_v1';
 export const CONSUMABLE_DEFS = [
   {
     id: 'headstart',
-    icon: '🔥',
+    icon: 'flame',
     title: 'Arrancada Turbo',
     desc: 'Começa a próxima corrida avançando +250m com Turbo inicial.',
     cost: 15
   },
   {
     id: 'bribeClock',
-    icon: '🧊',
+    icon: 'snowflake',
     title: 'Suborno no Relógio',
     desc: 'Congela o prazo de 24h nos primeiros 12s da próxima corrida.',
     cost: 15
   },
   {
     id: 'extraShield',
-    icon: '🛡️',
+    icon: 'shield',
     title: 'Maleta Blindada',
     desc: 'Garante um Escudo de Imunidade ativo na largada.',
     cost: 20
@@ -47,7 +47,7 @@ export const CONSUMABLE_DEFS = [
 export const UPGRADE_DEFS = [
   {
     id: 'magnet',
-    icon: '🧲',
+    icon: 'magnet',
     badge: 'Atração',
     title: 'Ímã Eleitoral',
     desc: 'Puxa estrelas próximas automaticamente durante a fuga.',
@@ -56,7 +56,7 @@ export const UPGRADE_DEFS = [
   },
   {
     id: 'startShield',
-    icon: '🛡️',
+    icon: 'shield',
     badge: 'Defesa',
     title: 'Blindagem Inicial',
     desc: 'Começa a corrida protegido e amplia imunidade pós-impacto.',
@@ -65,7 +65,7 @@ export const UPGRADE_DEFS = [
   },
   {
     id: 'coffeeBoost',
-    icon: '☕',
+    icon: 'coffee',
     badge: 'Tempo',
     title: 'Café Termoelétrico',
     desc: 'Aumenta o congelamento do relógio 24h e ganha respiro.',
@@ -74,7 +74,7 @@ export const UPGRADE_DEFS = [
   },
   {
     id: 'turboBoost',
-    icon: '⚡',
+    icon: 'bolt',
     badge: 'Motor',
     title: 'Motor & Turbo',
     desc: 'Aumenta a velocidade base de fuga e estende o Turbo Asa.',
@@ -83,7 +83,7 @@ export const UPGRADE_DEFS = [
   },
   {
     id: 'vehicleTier',
-    icon: '🚀',
+    icon: 'rocket',
     badge: 'Veículo',
     title: 'Trocar Veículo (Frota)',
     desc: 'Evolui sua frota (Esportivo → Stealth → VIP Ouro) para vencer os caças da FAB.',

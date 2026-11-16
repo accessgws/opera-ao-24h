@@ -16,6 +16,7 @@ const CORE_ASSETS = [
   './js/gameplay.js',
   './js/multiplayer.js',
   './js/monetization.js',
+  './js/icons.js',
   './js/render/utils.js',
   './js/render/world.js',
   './js/render/pursuers.js',

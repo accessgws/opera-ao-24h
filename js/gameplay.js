@@ -744,8 +744,20 @@ export function update(dt) {
     state.currentSpeed = (420 + act3Progress * 280 + fabBonus) * fleetMult * turboMult * tailwindMult;
   }
 
+  const prevDist = state.distanceMeters;
   const deltaMeters = state.currentSpeed * dt * 0.068;
   state.distanceMeters += deltaMeters;
+  if (state.currentAct === 3) {
+    const prevAct3 = state.selectedGameMode === 'classic' ? prevDist : Math.max(0, prevDist - ACT3_DISTANCE);
+    const nextAct3 = state.selectedGameMode === 'classic' ? state.distanceMeters : Math.max(0, state.distanceMeters - ACT3_DISTANCE);
+    if (prevAct3 < 900 && nextAct3 >= 900) {
+      showActBanner('Novo Território', '🌴 LITORAL & SERRA DO MAR');
+    } else if (prevAct3 < 2100 && nextAct3 >= 2100) {
+      showActBanner('Novo Território', '⛈️ TRAVESSIA OCEÂNICA');
+    } else if (prevAct3 < 3600 && nextAct3 >= 3600) {
+      showActBanner('Destino Alcançado!', '🌆 METRÓPOLE INTERNACIONAL');
+    }
+  }
   state.score += deltaMeters * (state.currentAct === 3 ? 3.2 : 2.2);
   trackMissionProgress('run_dist', state.distanceMeters, true);
   trackMissionProgress('run_score', state.score, true);

@@ -2,7 +2,7 @@
 // CENÁRIOS DOS 3 ATOS, OBSTÁCULOS, COLETÁVEIS E PARTÍCULAS
 // =============================================================================
 
-import { LOGICAL_HEIGHT, ceilingY } from '../config.js';
+import { LOGICAL_HEIGHT, ceilingY, ACT3_DISTANCE } from '../config.js';
 import { ctx } from '../dom.js';
 import { getTimeOfDayState, lerpColor, drawGroundShadow, drawStar } from './utils.js';
 import { state, player } from '../state.js';
@@ -518,62 +518,165 @@ export function drawAct2HighwayBackdrop(nightMix = 0) {
 }
 
 export function drawAct3SkyBackdrop(nightMix = 0) {
-  // Horizonte distante de Brasília com Ponte JK + luzes urbanas + Lago Paranoá
-  ctx.fillStyle = nightMix > 0.35 ? 'rgba(2, 6, 23, 0.42)' : 'rgba(15, 23, 42, 0.22)';
-  for (let sx = -state.bgFarOffset; sx < state.logicalWidth + 1600; sx += 1600) {
-    const blocks = [60, 240, 820, 1000, 1360];
-    for (const bx of blocks) {
-      ctx.fillRect(sx + bx, state.groundY - 64, 120, 64);
-      if (nightMix > 0.3) {
-        ctx.fillStyle = 'rgba(253, 224, 71, 0.48)';
-        for (let wy = state.groundY - 54; wy < state.groundY - 14; wy += 16) {
-          ctx.fillRect(sx + bx + 14, wy, 12, 6);
-          ctx.fillRect(sx + bx + 44, wy, 12, 6);
-          ctx.fillRect(sx + bx + 78, wy, 12, 6);
+  const act3Dist = state.selectedGameMode === 'classic'
+    ? state.distanceMeters
+    : Math.max(0, state.distanceMeters - ACT3_DISTANCE);
+  // 0 = Brasília/Paranoá, 1 = Litoral/Costa, 2 = Oceano/Tempestade, 3 = Metrópole Exterior
+  const biome = act3Dist >= 3600 ? 3 : act3Dist >= 2100 ? 2 : act3Dist >= 900 ? 1 : 0;
+
+  if (biome === 0) {
+    // CENÁRIO 1: Horizonte de Brasília com Ponte JK + Congresso
+    ctx.fillStyle = nightMix > 0.35 ? 'rgba(2, 6, 23, 0.42)' : 'rgba(15, 23, 42, 0.22)';
+    for (let sx = -state.bgFarOffset; sx < state.logicalWidth + 1600; sx += 1600) {
+      const blocks = [60, 240, 820, 1000, 1360];
+      for (const bx of blocks) {
+        ctx.fillRect(sx + bx, state.groundY - 64, 120, 64);
+        if (nightMix > 0.3) {
+          ctx.fillStyle = 'rgba(253, 224, 71, 0.48)';
+          for (let wy = state.groundY - 54; wy < state.groundY - 14; wy += 16) {
+            ctx.fillRect(sx + bx + 14, wy, 12, 6);
+            ctx.fillRect(sx + bx + 44, wy, 12, 6);
+            ctx.fillRect(sx + bx + 78, wy, 12, 6);
+          }
+          ctx.fillStyle = nightMix > 0.35 ? 'rgba(2, 6, 23, 0.42)' : 'rgba(15, 23, 42, 0.22)';
         }
-        ctx.fillStyle = nightMix > 0.35 ? 'rgba(2, 6, 23, 0.42)' : 'rgba(15, 23, 42, 0.22)';
+      }
+      const pjx = sx + 1120;
+      ctx.fillRect(pjx, state.groundY - 12, 220, 6);
+      ctx.strokeStyle = nightMix > 0.35 ? 'rgba(226, 232, 240, 0.32)' : 'rgba(255, 255, 255, 0.48)';
+      ctx.lineWidth = 3;
+      for (let a = 0; a < 3; a++) {
+        const ax = pjx + 35 + a * 72;
+        ctx.beginPath();
+        ctx.arc(ax, state.groundY - 10, 32, Math.PI, 0);
+        ctx.stroke();
+      }
+
+      const cx = sx + 560;
+      ctx.fillRect(cx - 140, state.groundY - 28, 280, 28);
+      ctx.fillRect(cx - 26, state.groundY - 150, 22, 122);
+      ctx.fillRect(cx + 4, state.groundY - 150, 22, 122);
+      ctx.beginPath();
+      ctx.arc(cx - 72, state.groundY - 28, 34, Math.PI, 0);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(cx + 76, state.groundY - 52, 38, 0, Math.PI);
+      ctx.fill();
+    }
+
+    ctx.fillStyle = nightMix > 0.45 ? '#0f172a' : '#0284c7';
+    for (let hx = -state.bgMidOffset; hx < state.logicalWidth + 1200; hx += 600) {
+      ctx.beginPath();
+      ctx.moveTo(hx, state.groundY);
+      ctx.quadraticCurveTo(hx + 150, state.groundY - 46, hx + 300, state.groundY);
+      ctx.quadraticCurveTo(hx + 450, state.groundY - 32, hx + 600, state.groundY);
+      ctx.closePath();
+      ctx.fill();
+    }
+  } else if (biome === 1) {
+    // CENÁRIO 2: Litoral Brasileiro (Serra do Mar, Farol e Ilhas Tropicais)
+    ctx.fillStyle = nightMix > 0.45 ? 'rgba(15, 23, 42, 0.55)' : 'rgba(6, 95, 70, 0.38)';
+    for (let sx = -state.bgFarOffset; sx < state.logicalWidth + 1400; sx += 700) {
+      ctx.beginPath();
+      ctx.moveTo(sx, state.groundY);
+      ctx.lineTo(sx + 130, state.groundY - 135);
+      ctx.lineTo(sx + 290, state.groundY - 48);
+      ctx.lineTo(sx + 440, state.groundY - 160);
+      ctx.lineTo(sx + 610, state.groundY - 55);
+      ctx.lineTo(sx + 700, state.groundY);
+      ctx.closePath();
+      ctx.fill();
+    }
+    for (let hx = -state.bgMidOffset; hx < state.logicalWidth + 1200; hx += 900) {
+      // Ilha com Farol piscando
+      ctx.fillStyle = nightMix > 0.45 ? '#064e3b' : '#15803d';
+      ctx.beginPath();
+      ctx.arc(hx + 280, state.groundY, 95, Math.PI, 0);
+      ctx.fill();
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillRect(hx + 272, state.groundY - 122, 16, 48);
+      ctx.fillStyle = '#dc2626';
+      ctx.fillRect(hx + 272, state.groundY - 106, 16, 10);
+      if (Math.floor(performance.now() * 0.005) % 2 === 0) {
+        ctx.fillStyle = 'rgba(254, 240, 138, 0.75)';
+        ctx.beginPath();
+        ctx.moveTo(hx + 280, state.groundY - 124);
+        ctx.lineTo(hx + 390, state.groundY - 150);
+        ctx.lineTo(hx + 390, state.groundY - 100);
+        ctx.closePath();
+        ctx.fill();
       }
     }
-    // Ponte JK estilizada (3 arcos icônicos)
-    const pjx = sx + 1120;
-    ctx.fillRect(pjx, state.groundY - 12, 220, 6);
-    ctx.strokeStyle = nightMix > 0.35 ? 'rgba(226, 232, 240, 0.32)' : 'rgba(255, 255, 255, 0.48)';
-    ctx.lineWidth = 3;
-    for (let a = 0; a < 3; a++) {
-      const ax = pjx + 35 + a * 72;
-      ctx.beginPath();
-      ctx.arc(ax, state.groundY - 10, 32, Math.PI, 0);
-      ctx.stroke();
+  } else if (biome === 2) {
+    // CENÁRIO 3: Travessia Oceânica & Tempestade (Navios + Plataformas + Raios)
+    if (Math.floor(performance.now() * 0.003) % 11 === 0) {
+      ctx.fillStyle = 'rgba(224, 242, 254, 0.09)';
+      ctx.fillRect(0, -state.worldOffsetY, state.logicalWidth, state.groundY + state.worldOffsetY);
     }
-
-    const cx = sx + 560;
-    ctx.fillRect(cx - 140, state.groundY - 28, 280, 28);
-    ctx.fillRect(cx - 26, state.groundY - 150, 22, 122);
-    ctx.fillRect(cx + 4, state.groundY - 150, 22, 122);
-    ctx.beginPath();
-    ctx.arc(cx - 72, state.groundY - 28, 34, Math.PI, 0);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(cx + 76, state.groundY - 52, 38, 0, Math.PI);
-    ctx.fill();
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.55)';
+    for (let sx = -state.bgFarOffset; sx < state.logicalWidth + 1500; sx += 850) {
+      // Plataforma petrolífera distante
+      const px = sx + 220;
+      ctx.fillRect(px, state.groundY - 46, 86, 10);
+      ctx.fillRect(px + 12, state.groundY - 36, 8, 36);
+      ctx.fillRect(px + 66, state.groundY - 36, 8, 36);
+      ctx.fillRect(px + 34, state.groundY - 92, 18, 46);
+      // Navio cargueiro
+      const nx = sx + 600;
+      ctx.beginPath();
+      ctx.moveTo(nx, state.groundY - 14);
+      ctx.lineTo(nx + 120, state.groundY - 14);
+      ctx.lineTo(nx + 108, state.groundY);
+      ctx.lineTo(nx + 8, state.groundY);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillStyle = '#dc2626';
+      ctx.fillRect(nx + 24, state.groundY - 26, 26, 12);
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillRect(nx + 54, state.groundY - 24, 24, 10);
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.55)';
+    }
+  } else {
+    // CENÁRIO 4: Metrópole Internacional (Arranha-céus iluminados no Exterior)
+    for (let sx = -state.bgFarOffset; sx < state.logicalWidth + 1600; sx += 800) {
+      const towers = [
+        { x: 40, w: 68, h: 175 },
+        { x: 125, w: 54, h: 130 },
+        { x: 205, w: 82, h: 220 },
+        { x: 315, w: 60, h: 155 },
+        { x: 410, w: 92, h: 245 },
+        { x: 530, w: 64, h: 165 },
+        { x: 630, w: 76, h: 195 }
+      ];
+      for (const tw of towers) {
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.72)';
+        ctx.fillRect(sx + tw.x, state.groundY - tw.h, tw.w, tw.h);
+        ctx.fillStyle = tw.h > 200 ? 'rgba(56, 189, 248, 0.55)' : 'rgba(250, 204, 21, 0.5)';
+        for (let wy = state.groundY - tw.h + 14; wy < state.groundY - 18; wy += 18) {
+          for (let wx = sx + tw.x + 10; wx < sx + tw.x + tw.w - 14; wx += 18) {
+            ctx.fillRect(wx, wy, 8, 6);
+          }
+        }
+      }
+    }
   }
 
-  // Colinas suaves do horizonte
-  ctx.fillStyle = nightMix > 0.45 ? '#0f172a' : '#0284c7';
-  for (let hx = -state.bgMidOffset; hx < state.logicalWidth + 1200; hx += 600) {
-    ctx.beginPath();
-    ctx.moveTo(hx, state.groundY);
-    ctx.quadraticCurveTo(hx + 150, state.groundY - 46, hx + 300, state.groundY);
-    ctx.quadraticCurveTo(hx + 450, state.groundY - 32, hx + 600, state.groundY);
-    ctx.closePath();
-    ctx.fill();
-  }
-
-  // Lago Paranoá estilizado lá embaixo com reflexos em movimento
+  // Mar / Água abaixo do avião adaptada ao cenário
   const worldBottom = state.logicalHeight - state.worldOffsetY;
   const lakeGrad = ctx.createLinearGradient(0, state.groundY, 0, worldBottom);
-  lakeGrad.addColorStop(0, nightMix > 0.45 ? '#0c4a6e' : '#0369a1');
-  lakeGrad.addColorStop(1, '#082f49');
+  if (biome === 1) {
+    lakeGrad.addColorStop(0, nightMix > 0.45 ? '#0e7490' : '#06b6d4');
+    lakeGrad.addColorStop(1, '#083344');
+  } else if (biome === 2) {
+    lakeGrad.addColorStop(0, '#0f172a');
+    lakeGrad.addColorStop(1, '#020617');
+  } else if (biome === 3) {
+    lakeGrad.addColorStop(0, '#1e1b4b');
+    lakeGrad.addColorStop(1, '#020617');
+  } else {
+    lakeGrad.addColorStop(0, nightMix > 0.45 ? '#0c4a6e' : '#0369a1');
+    lakeGrad.addColorStop(1, '#082f49');
+  }
   ctx.fillStyle = lakeGrad;
   ctx.fillRect(0, state.groundY, state.logicalWidth, worldBottom - state.groundY);
 

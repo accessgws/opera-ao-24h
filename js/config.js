@@ -49,11 +49,20 @@ export const UPGRADE_DEFS = [
   {
     id: 'turboBoost',
     icon: '⚡',
-    badge: 'Velocidade',
-    title: 'Turbo Supersônico',
-    desc: 'Estende o Turbo Asa e dá bônus extra ao quebrar obstáculos.',
+    badge: 'Motor',
+    title: 'Motor & Turbo',
+    desc: 'Aumenta a velocidade base de fuga e estende o Turbo Asa.',
     costs: [25, 55, 95],
-    effects: ['3.5s • +100 pts', '4.6s • +140 pts', '5.8s • +180 pts', '7.2s • +220 pts']
+    effects: ['3.5s • +0% vel.', '4.6s • +6% vel.', '5.8s • +12% vel.', '7.2s • +20% vel.']
+  },
+  {
+    id: 'vehicleTier',
+    icon: '🚀',
+    badge: 'Veículo',
+    title: 'Trocar Veículo (Frota)',
+    desc: 'Evolui sua frota (Esportivo → Stealth → VIP Ouro) para vencer os caças da FAB.',
+    costs: [30, 70, 130],
+    effects: ['Padrão (1.00x)', 'Esportivo (+12% vel.)', 'Stealth (+24% vel.)', 'VIP Ouro (+38% vel.)']
   }
 ];
 
@@ -68,8 +77,8 @@ export const MISSION_TEMPLATES = [
   {
     type: 'run_dist',
     perRun: true,
-    targets: [450, 850, 1250],
-    rewards: [25, 40, 65],
+    targets: [900, 1800, 2600],
+    rewards: [25, 45, 75],
     makeLabel: (t) => `Alcance ${t} m em 1 corrida`
   },
   {
@@ -108,11 +117,11 @@ export const MIN_LOGICAL_WIDTH = 720;
 
 export const ceilingY = 44;
 
-export const ACT2_DISTANCE = 450;
+export const ACT2_DISTANCE = 900;
 
-export const ACT3_DISTANCE = 1100;
+export const ACT3_DISTANCE = 2200;
 
-export const HOURS_PER_SECOND = 0.4;
+export const HOURS_PER_SECOND = 0.28;
 
 export const COFFEE_FREEZE_SEC = 4.0;
 

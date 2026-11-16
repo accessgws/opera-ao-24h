@@ -125,6 +125,12 @@ export function getShieldPostInvuln() {
   return invulns[upgrades.startShield] || 1.0;
 }
 
+export function getVehicleSpeedMultiplier() {
+  const fleetBonus = [1.0, 1.12, 1.24, 1.38][upgrades.vehicleTier] || 1.0;
+  const engineBonus = [0, 0.06, 0.12, 0.20][upgrades.turboBoost] || 0;
+  return fleetBonus + engineBonus;
+}
+
 export function getAvailableUpgradeCount() {
   let count = 0;
   for (const def of UPGRADE_DEFS) {

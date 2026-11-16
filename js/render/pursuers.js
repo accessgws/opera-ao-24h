@@ -442,9 +442,10 @@ export function drawPursuer() {
   } else if (state.gameState === 'PLAYING' || state.gameState === 'IMPACT') {
     // Avião perseguidor da FAB no Ato 3: evolui com o tempo (Tucano -> F-5M -> Jato Gripen)
     const t = state.endlessFlightSeconds;
-    const stage = t >= 45 ? 3 : t >= 20 ? 2 : 1;
+    const stage = t >= 50 ? 3 : t >= 22 ? 2 : 1;
     const nowT = performance.now();
-    const behind = stage === 1 ? 154 : stage === 2 ? 136 : 118;
+    const gap = Math.max(0, Math.min(100, state.pursuerVisualGap));
+    const behind = Math.max(54, 48 + gap * 1.18);
     const px = Math.max(56, player.x - behind);
     const py = Math.max(ceilingY + 46, Math.min(state.groundY - 58, player.y - 24 + Math.sin(t * (2.2 + stage * 0.4)) * 10));
     const pitch = Math.max(-0.22, Math.min(0.22, (player.y - py) * 0.0025));

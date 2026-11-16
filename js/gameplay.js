@@ -9,7 +9,7 @@ import { drawTransitionProps, drawRemoteRivals, drawPlayer, drawImpactComedyEffe
 import { drawPursuer } from './render/pursuers.js';
 import { spawnExplosion, addFloatingText, spawnDust, drawBackground, drawCollectibles, drawObstacles, drawParticlesAndEffects } from './render/world.js';
 import { state, player, triggerHaptic, upgrades, saySpeech, adjustPursuerGap } from './state.js';
-import { saveProgressState, rollCompletedMissions, resetPerRunMissions, getShieldPostInvuln, getMagnetRadius, getCoffeeFreezeDuration, getTurboDuration } from './storage.js';
+import { saveProgressState, rollCompletedMissions, resetPerRunMissions, getShieldPostInvuln, getMagnetRadius, getCoffeeFreezeDuration, getTurboDuration, getVehicleSpeedMultiplier } from './storage.js';
 import { closeGarage, syncProgressUI, syncActHUD, updateHUD, showActBanner, showControlHintForAct, finalizeGameOver, trackMissionProgress, addRunStars, triggerGameOver, registerComboHit } from './ui.js';
 import { mpState, nextRand, seedMatchPrng, sendMpTick, updateMultiplayerHUD, registerMatchStartHandler } from './multiplayer.js';
 
@@ -725,19 +725,20 @@ export function update(dt) {
   // -----------------------------------------------------------------------
   // PROGRESSÃO DE DISTÂNCIA, PONTOS, COMBO E RELÓGIO DE 24H
   // -----------------------------------------------------------------------
+  const fleetMult = getVehicleSpeedMultiplier();
   if (state.currentAct === 1) {
     const act1Progress = Math.min(1, state.distanceMeters / ACT2_DISTANCE);
-    state.currentSpeed = 345 + act1Progress * 75;
+    state.currentSpeed = (345 + act1Progress * 85) * (1 + (fleetMult - 1) * 0.45);
   } else if (state.currentAct === 2) {
     const act2Progress = Math.min(1, (state.distanceMeters - ACT2_DISTANCE) / (ACT3_DISTANCE - ACT2_DISTANCE));
-    state.currentSpeed = 460 + act2Progress * 95;
+    state.currentSpeed = (460 + act2Progress * 110) * (1 + (fleetMult - 1) * 0.65);
   } else {
     const baseDist = state.selectedGameMode === 'classic' ? state.distanceMeters : (state.distanceMeters - ACT3_DISTANCE);
-    const act3Progress = Math.min(1, Math.max(0, baseDist) / 1400);
+    const act3Progress = Math.min(1, Math.max(0, baseDist) / 1800);
     const turboMult = player.turboTimer > 0 ? 1.55 : 1.0;
     const tailwindMult = state.tailwindTimer > 0 ? 1.22 : 1.0;
-    const fabBonus = state.endlessFlightSeconds >= 45 ? 65 : state.endlessFlightSeconds >= 20 ? 30 : 0;
-    state.currentSpeed = (420 + act3Progress * 280 + fabBonus) * turboMult * tailwindMult;
+    const fabBonus = state.endlessFlightSeconds >= 50 ? 65 : state.endlessFlightSeconds >= 22 ? 30 : 0;
+    state.currentSpeed = (420 + act3Progress * 280 + fabBonus) * fleetMult * turboMult * tailwindMult;
   }
 
   const deltaMeters = state.currentSpeed * dt * 0.068;
@@ -806,12 +807,22 @@ export function update(dt) {
   } else {
     const prevFlight = state.endlessFlightSeconds;
     state.endlessFlightSeconds += dt;
-    if (prevFlight < 20 && state.endlessFlightSeconds >= 20) {
-      showActBanner('FAB Acelerando! +Velocidade', 'CAÇA F-5M TIGER NA COLA!');
+    if (prevFlight < 22 && state.endlessFlightSeconds >= 22) {
+      showActBanner('FAB Acelerando! Melhore seu Avião', 'CAÇA F-5M TIGER NA COLA!');
       saySpeech('Eita, mandaram um caça!', 2.4);
-    } else if (prevFlight < 45 && state.endlessFlightSeconds >= 45) {
+    } else if (prevFlight < 50 && state.endlessFlightSeconds >= 50) {
       showActBanner('Alerta Máximo! Interceptação', 'JATO F-39 GRIPEN DA FAB!');
       saySpeech('Agora é jato supersônico!!', 2.4);
+    }
+
+    const playerFlightMult = getVehicleSpeedMultiplier()
+      * (player.turboTimer > 0 ? 1.45 : 1.0)
+      * (state.tailwindTimer > 0 ? 1.22 : 1.0);
+    const fabTargetMult = state.endlessFlightSeconds >= 50 ? 1.38 : state.endlessFlightSeconds >= 22 ? 1.14 : 0.96;
+    adjustPursuerGap((playerFlightMult - fabTargetMult) * 24 * dt);
+    if (state.pursuerGap <= 0) {
+      triggerGameOver('Interceptado pelo caça da FAB! Melhore seu veículo e motor na Garagem!', false, 'fab_intercept', true);
+      return;
     }
   }
 
@@ -867,6 +878,8 @@ export function update(dt) {
     state.obstacles = [];
     state.clockFreezeTimer = 0;
     state.tailwindTimer = 0;
+    state.pursuerGap = 78;
+    state.pursuerVisualGap = 78;
     player.y = state.groundY - 38;
     player.vy = -340;
     player.pitch = -0.25;
@@ -1154,6 +1167,7 @@ export function update(dt) {
         state.score += pts;
         state.distanceMeters += 18;
         addRunStars(3);
+        adjustPursuerGap(8);
         trackMissionProgress('rings', 1);
         player.emotionType = 'smug';
         player.emotionTimer = 0.8;
@@ -1198,6 +1212,7 @@ export function update(dt) {
       } else if (item.type === 'wind_stream') {
         state.tailwindTimer = 2.8;
         state.score += 120;
+        adjustPursuerGap(12);
         saySpeech('Vento a favor!', 1.5);
         audio.playWindGust();
         triggerHaptic(14);

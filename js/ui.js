@@ -355,31 +355,32 @@ export function updateHUD() {
     dom.hudComboPill.classList.add('hidden');
   }
 
-  // Barra de Progresso até o Aeroporto no modo Campanha
+  // Barra de Progresso até o Aeroporto no modo Campanha + Medidor de Perseguição (Atos 1, 2 e FAB no Ato 3)
   if (state.selectedGameMode === 'campaign' && state.currentAct < 3) {
     dom.hudRouteWrap.classList.remove('hidden');
     const pct = Math.min(100, (state.distanceMeters / ACT3_DISTANCE) * 100);
     dom.hudRouteFill.style.width = `${pct}%`;
-
-    dom.hudPursuitWrap.classList.remove('hidden');
-    const gap = Math.max(0, Math.min(100, state.pursuerGap));
-    dom.hudPursuitFill.style.width = `${gap}%`;
-    if (gap <= 34) {
-      dom.hudPursuitFill.className = 'h-full rounded-full bg-rose-500 animate-pulse transition-[width] duration-100';
-      dom.hudPursuitText.textContent = 'PERIGO!';
-      dom.hudPursuitText.className = 'text-rose-400 font-black tabular-nums';
-    } else if (gap <= 60) {
-      dom.hudPursuitFill.className = 'h-full rounded-full bg-amber-400 transition-[width] duration-100';
-      dom.hudPursuitText.textContent = 'Perto';
-      dom.hudPursuitText.className = 'text-amber-300 tabular-nums';
-    } else {
-      dom.hudPursuitFill.className = 'h-full rounded-full bg-emerald-400 transition-[width] duration-100';
-      dom.hudPursuitText.textContent = 'Segura';
-      dom.hudPursuitText.className = 'text-emerald-300 tabular-nums';
-    }
   } else {
     dom.hudRouteWrap.classList.add('hidden');
-    dom.hudPursuitWrap.classList.add('hidden');
+  }
+
+  dom.hudPursuitWrap.classList.remove('hidden');
+  const gap = Math.max(0, Math.min(100, state.pursuerGap));
+  dom.hudPursuitFill.style.width = `${gap}%`;
+  const fabActive = state.currentAct === 3;
+  const fabName = state.endlessFlightSeconds >= 50 ? 'GRIPEN!' : state.endlessFlightSeconds >= 22 ? 'F-5M!' : 'Tucano';
+  if (gap <= 34) {
+    dom.hudPursuitFill.className = 'h-full rounded-full bg-rose-500 animate-pulse transition-[width] duration-100';
+    dom.hudPursuitText.textContent = fabActive ? `${fabName} PERIGO` : 'PERIGO!';
+    dom.hudPursuitText.className = 'text-rose-400 font-black tabular-nums';
+  } else if (gap <= 60) {
+    dom.hudPursuitFill.className = 'h-full rounded-full bg-amber-400 transition-[width] duration-100';
+    dom.hudPursuitText.textContent = fabActive ? `${fabName} Perto` : 'Perto';
+    dom.hudPursuitText.className = 'text-amber-300 tabular-nums';
+  } else {
+    dom.hudPursuitFill.className = 'h-full rounded-full bg-emerald-400 transition-[width] duration-100';
+    dom.hudPursuitText.textContent = fabActive ? `${fabName} Longe` : 'Segura';
+    dom.hudPursuitText.className = 'text-emerald-300 tabular-nums';
   }
 
   // Atualização do Relógio 24h / Modo Infinito Ato 3

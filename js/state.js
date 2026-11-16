@@ -88,7 +88,7 @@ export const state = {
   dustTimer: 0
 };
 
-export const upgrades = { magnet: 0, startShield: 0, coffeeBoost: 0, turboBoost: 0 };
+export const upgrades = { magnet: 0, startShield: 0, coffeeBoost: 0, turboBoost: 0, vehicleTier: 0 };
 export const missionsState = { completedCount: 0, slots: [] };
 
 export const player = {
@@ -121,7 +121,6 @@ export function saySpeech(text, duration = 2.4) {
 }
 
 export function adjustPursuerGap(delta) {
-  if (state.currentAct >= 3) return;
   state.pursuerGap = Math.max(0, Math.min(100, state.pursuerGap + delta));
 }
 

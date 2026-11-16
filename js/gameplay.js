@@ -1192,13 +1192,14 @@ export function update(dt) {
         const mult = registerComboHit();
         const pts = 50 * mult;
         state.score += pts;
-        addRunStars(1);
-        trackMissionProgress('stars', 1);
+        const bonusStar = state.selectedSkin === 'gold' && (state.runStars + 1) % 5 === 0 ? 1 : 0;
+        addRunStars(1 + bonusStar);
+        trackMissionProgress('stars', 1 + bonusStar);
         adjustPursuerGap(2.8);
         if (state.currentAct === 3) state.distanceMeters += 8;
         audio.playStarPickup();
         spawnExplosion(item.x, item.y, '#facc15', 9);
-        addFloatingText(item.x, item.y - 16, mult > 1 ? `+${pts} (x${mult}) +1★` : `+${pts} • +1★`, '#fde047');
+        addFloatingText(item.x, item.y - 16, bonusStar ? `+${pts} • +2★ VIP!` : (mult > 1 ? `+${pts} (x${mult}) +1★` : `+${pts} • +1★`), '#fde047');
       } else if (item.type === 'ring') {
         const mult = registerComboHit();
         const pts = 180 * mult;
@@ -1213,7 +1214,7 @@ export function update(dt) {
         spawnExplosion(item.x, item.y, '#34d399', 16);
         addFloatingText(item.x, item.y - 24, `Anel Aéreo! +${pts} (+3★)`, '#6ee7b7');
       } else if (item.type === 'coffee') {
-        state.clockFreezeTimer = getCoffeeFreezeDuration();
+        state.clockFreezeTimer = getCoffeeFreezeDuration() * (state.selectedSkin === 'stealth' ? 1.2 : 1);
         state.score += 150;
         adjustPursuerGap(16 + upgrades.coffeeBoost * 3);
         trackMissionProgress('coffee', 1);
@@ -1228,7 +1229,7 @@ export function update(dt) {
         spawnExplosion(item.x, item.y, '#22d3ee', 16);
         addFloatingText(item.x, item.y - 22, 'Escudo de Imunidade!', '#67e8f9');
       } else if (item.type === 'turbo') {
-        player.turboTimer = getTurboDuration();
+        player.turboTimer = getTurboDuration() * (state.selectedSkin === 'stealth' ? 1.2 : 1);
         player.emotionType = 'smug';
         player.emotionTimer = 1.2;
         adjustPursuerGap(25);

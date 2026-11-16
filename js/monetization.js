@@ -10,6 +10,12 @@ import { syncProgressUI } from './ui.js';
 
 const STORAGE_MONETIZATION_KEY = 'operacao_24h_voo_fuga_monetization_v1';
 const GARAGE_AD_COOLDOWN_MS = 60000;
+const DAILY_REWARDS = [15, 20, 35, 45, 60, 80, 120];
+
+function getTodayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
 
 export const STORE_PACKS = [
   {
@@ -66,6 +72,8 @@ export const monetization = {
   vipPass: false,
   purchasedIds: [],
   lastGarageAdAt: 0,
+  lastDailyClaimDate: '',
+  dailyStreak: 0,
   vipTrialActive: false,
   revivedThisRun: false,
   doubledStarsThisRun: false
@@ -87,6 +95,8 @@ export function loadMonetizationState() {
     monetization.vipPass = Boolean(parsed.vipPass);
     monetization.purchasedIds = Array.isArray(parsed.purchasedIds) ? parsed.purchasedIds : [];
     monetization.lastGarageAdAt = Number(parsed.lastGarageAdAt) || 0;
+    monetization.lastDailyClaimDate = typeof parsed.lastDailyClaimDate === 'string' ? parsed.lastDailyClaimDate : '';
+    monetization.dailyStreak = Math.max(0, Math.min(6, Number(parsed.dailyStreak) || 0));
   } catch (e) {}
 }
 
@@ -96,9 +106,28 @@ export function saveMonetizationState() {
       removeAds: monetization.removeAds,
       vipPass: monetization.vipPass,
       purchasedIds: monetization.purchasedIds,
-      lastGarageAdAt: monetization.lastGarageAdAt
+      lastGarageAdAt: monetization.lastGarageAdAt,
+      lastDailyClaimDate: monetization.lastDailyClaimDate,
+      dailyStreak: monetization.dailyStreak
     }));
   } catch (e) {}
+}
+
+export function canClaimDailyReward() {
+  return monetization.lastDailyClaimDate !== getTodayKey();
+}
+
+export function claimDailyReward() {
+  if (!canClaimDailyReward()) return false;
+  const reward = DAILY_REWARDS[monetization.dailyStreak] || 15;
+  monetization.lastDailyClaimDate = getTodayKey();
+  monetization.dailyStreak = (monetization.dailyStreak + 1) % DAILY_REWARDS.length;
+  state.totalStars += reward;
+  saveProgressState();
+  saveMonetizationState();
+  syncProgressUI();
+  renderShopUI();
+  return true;
 }
 
 export function resetRunMonetizationFlags() {
@@ -205,6 +234,14 @@ function applyPackReward(pack) {
 export function renderShopUI() {
   if (dom.shopTotalStars) {
     dom.shopTotalStars.textContent = String(state.totalStars);
+  }
+  if (dom.shopDailyTitle && dom.btnClaimDailyReward) {
+    const canClaim = canClaimDailyReward();
+    const dayNum = monetization.dailyStreak + 1;
+    const reward = DAILY_REWARDS[monetization.dailyStreak] || 15;
+    dom.shopDailyTitle.textContent = `🎁 Bônus Diário (Dia ${dayNum}/7)`;
+    dom.btnClaimDailyReward.disabled = !canClaim;
+    dom.btnClaimDailyReward.textContent = canClaim ? `Resgatar +${reward} ★` : '✓ Resgatado hoje';
   }
   if (dom.btnShopAdStars) {
     const waitMs = Math.max(0, GARAGE_AD_COOLDOWN_MS - (Date.now() - monetization.lastGarageAdAt));

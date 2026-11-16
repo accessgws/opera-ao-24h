@@ -9,7 +9,7 @@ import { resizeCanvas, render, syncTouchZoneGuides, handleDuckOrFastFall, pulseT
 import { state } from './state.js';
 import { closeGarage, toggleMutePreference, cycleRoast, generateAndDownloadShareCard, toggleMusicPreference, toggleTouchModePreference, openGarage } from './ui.js';
 import { mpState, openMultiplayer, closeMultiplayer, connectToRoom, leaveRoom, requestMpStartMatch, sendMpSkin, sendMpMode, generateRoomCode, sanitizeRoomCode } from './multiplayer.js';
-import { openShop, closeShop, triggerAdRevive, triggerAdDoubleStars, triggerShopAdStars, triggerShopAdVipTrial, confirmSandboxPurchase, cancelSandboxPurchase } from './monetization.js';
+import { openShop, closeShop, triggerAdRevive, triggerAdDoubleStars, triggerShopAdStars, triggerShopAdVipTrial, confirmSandboxPurchase, cancelSandboxPurchase, claimDailyReward } from './monetization.js';
 
 export function initInputListeners() {
   const handleRestartAction = () => {
@@ -638,6 +638,13 @@ export function initInputListeners() {
   if (dom.shopOverlay) {
     dom.shopOverlay.addEventListener('click', (e) => {
       if (e.target === dom.shopOverlay) closeShop();
+    });
+  }
+
+  if (dom.btnClaimDailyReward) {
+    dom.btnClaimDailyReward.addEventListener('click', (e) => {
+      e.stopPropagation();
+      claimDailyReward();
     });
   }
 

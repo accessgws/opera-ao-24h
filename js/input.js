@@ -628,6 +628,13 @@ export function initInputListeners() {
     });
   }
 
+  if (dom.btnStartShop) {
+    dom.btnStartShop.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openShop();
+    });
+  }
+
   if (dom.btnCloseShop) {
     dom.btnCloseShop.addEventListener('click', (e) => {
       e.stopPropagation();

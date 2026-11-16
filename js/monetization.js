@@ -118,6 +118,12 @@ export function canClaimDailyReward() {
   return monetization.lastDailyClaimDate !== getTodayKey();
 }
 
+export function syncDailyBonusBadge() {
+  if (dom.shopDailyDot) {
+    dom.shopDailyDot.classList.toggle('hidden', !canClaimDailyReward());
+  }
+}
+
 export function claimDailyReward() {
   if (!canClaimDailyReward()) return false;
   const reward = DAILY_REWARDS[monetization.dailyStreak] || 15;
@@ -127,6 +133,7 @@ export function claimDailyReward() {
   saveProgressState();
   saveMonetizationState();
   syncProgressUI();
+  syncDailyBonusBadge();
   renderShopUI();
   return true;
 }

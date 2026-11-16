@@ -343,17 +343,23 @@
             </div>
           </div>
 
-          <!-- Cofre de Estrelas + Garagem & Missões -->
+          <!-- Cofre de Estrelas + Garagem + Loja em 1 toque -->
           <div class="grid grid-cols-12 gap-1.5 items-stretch">
-            <div class="col-span-5 rounded-xl bg-amber-500/15 border border-amber-400/35 px-2.5 py-1.5 flex items-center justify-center gap-1.5">
+            <div class="col-span-3 rounded-xl bg-amber-500/15 border border-amber-400/35 px-2 py-1.5 flex items-center justify-center gap-1">
               <span class="text-xs sm:text-sm text-amber-300 leading-none">★</span>
               <span id="startTotalStars" class="text-xs sm:text-sm font-black text-amber-200 tabular-nums leading-none">0</span>
             </div>
             <button id="btnOpenGarage" type="button"
-              class="col-span-7 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/45 py-1.5 px-2.5 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-emerald-200 cursor-pointer transition flex items-center justify-center gap-1.5 truncate">
+              class="col-span-5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/45 py-1.5 px-2 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-emerald-200 cursor-pointer transition flex items-center justify-center gap-1 truncate">
               <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-              <span>Garagem &amp; Missões</span>
+              <span>Garagem</span>
               <span id="garageBadge" class="hidden rounded-full bg-amber-400 text-slate-950 px-1.5 py-0.5 text-[9px] font-black leading-none">1</span>
+            </button>
+            <button id="btnStartShop" type="button"
+              class="col-span-4 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/50 py-1.5 px-2 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-amber-200 cursor-pointer transition flex items-center justify-center gap-1 truncate">
+              <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg>
+              <span>Loja</span>
+              <span id="shopDailyDot" class="hidden w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
             </button>
           </div>
 

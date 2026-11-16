@@ -164,6 +164,8 @@ export const dom = {
   btnAdRevive: document.getElementById('btnAdRevive'),
   btnAdDoubleStars: document.getElementById('btnAdDoubleStars'),
   btnOpenShop: document.getElementById('btnOpenShop'),
+  btnStartShop: document.getElementById('btnStartShop'),
+  shopDailyDot: document.getElementById('shopDailyDot'),
   shopOverlay: document.getElementById('shopOverlay'),
   btnCloseShop: document.getElementById('btnCloseShop'),
   shopTotalStars: document.getElementById('shopTotalStars'),

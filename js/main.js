@@ -11,7 +11,7 @@ import { state, initClouds, initNightStars } from './state.js';
 import { loadSettings, loadProgressState } from './storage.js';
 import { syncTouchModeUI, syncProgressUI } from './ui.js';
 import { initMultiplayerFromUrl } from './multiplayer.js';
-import { loadMonetizationState } from './monetization.js';
+import { loadMonetizationState, syncDailyBonusBadge } from './monetization.js';
 
 function bootstrapApp() {
   initCanvasPolyfills();
@@ -22,6 +22,7 @@ function bootstrapApp() {
   }
   loadProgressState();
   loadMonetizationState();
+  syncDailyBonusBadge();
   syncTouchModeUI();
   syncProgressUI();
 
